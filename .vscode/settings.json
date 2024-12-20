@@ -1,0 +1,6 @@
+{
+    "python.analysis.autoImportCompletions": true,
+    "editor.formatOnSave": true,
+    "css.lint.unknownAtRules": "ignore",
+    "cSpell.words": [],
+}
