@@ -1,1 +1,1 @@
-# React + TypeScript + Vite
+# IUBAT CSE Automation
