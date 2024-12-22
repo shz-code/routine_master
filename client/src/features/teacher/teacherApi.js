@@ -4,7 +4,7 @@ const teacherApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     addTeacher: builder.mutation({
       query: (body) => ({
-        url: `/Teacher`,
+        url: `/teacher`,
         method: "POST",
         body: body,
       }),
@@ -19,12 +19,12 @@ const teacherApi = apiSlice.injectEndpoints({
     }),
     getTeachers: builder.query({
       query: () => ({
-        url: `/Teacher`,
+        url: `/teacher`,
       }),
     }),
     getTeacherInfo: builder.query({
       query: (id) => ({
-        url: `/Teacher/${id}`,
+        url: `/teacher/${id}`,
       }),
     }),
   }),

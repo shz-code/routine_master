@@ -2,8 +2,18 @@ from fastapi import FastAPI
 from src.routes.teacherRouter import router as teacherRouter
 from src.lib.db import engine
 from sqlmodel import SQLModel
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['http://localhost:5173'],  # Allows specified origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],  # Allows all headers
+)
+
 
 @app.on_event("startup")
 def on_startup():
