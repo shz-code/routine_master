@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import apiSlice from "../api/apiSlice";
 
 const teacherApi = apiSlice.injectEndpoints({
@@ -11,9 +12,9 @@ const teacherApi = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { queryFulfilled }) {
         try {
           const res = await queryFulfilled;
-          console.log(res);
         } catch (err) {
-          console.log(err);
+          console.error(err);
+          toast.error(err.error?.data?.detail);
         }
       },
     }),

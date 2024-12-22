@@ -1,5 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import { useAddTeacherMutation } from "../../../features/teacher/teacherApi";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
@@ -13,6 +14,8 @@ const TeacherForm = () => {
 
   const [addTeacher, { isLoading }] = useAddTeacherMutation();
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -24,8 +27,12 @@ const TeacherForm = () => {
     formData.append("file", file);
 
     const res = await addTeacher(formData);
+
     if (res.data) {
       toast.success("Teacher created successfully");
+      setTimeout(() => {
+        navigate("/teacher/all");
+      }, 1000);
     }
   };
 

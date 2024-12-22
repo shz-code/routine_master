@@ -1,11 +1,9 @@
-from typing import Annotated, Optional
-from fastapi import APIRouter, File, Form, Request, UploadFile
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.params import Depends
 from sqlmodel import Session, select
 from src.lib.db import get_db
 from src.models.teacher import Teacher
 from fastapi import status
-from pydantic import BaseModel
 router = APIRouter()
 
 
@@ -31,17 +29,18 @@ async def create_teacher(req: Request, db: Session = Depends(get_db)):
         with open(f"uploads/{file.filename}", "wb") as f:
             f.write(file.file.read())
     else:
-        print("No file uploaded")
+        # Check if code already exists
+        existing_teacher = db.exec(select(Teacher).where(
+            Teacher.shortCode == shortCode)).first()
+        if existing_teacher:
+            raise HTTPException(
+                status_code=400, detail="Teacher with this code already exists.")
 
-    # Check if code already exists
-    # existing_teacher = db.exec(select(Teacher).where(
-    #     Teacher.code == teacher.code)).first()
-    # if existing_teacher:
-    #     raise HTTPException(
-    #         status_code=400, detail="Teacher with this code already exists.")
+        teacher = Teacher(name=name, email=email,
+                          phoneNo=phoneNo, shortCode=shortCode)
+        db.add(teacher)
+        db.commit()
+        db.refresh(teacher)
+        return teacher
 
-    # teacher = Teacher(**teacher.dict())
-    # db.add(teacher)
-    # db.commit()
-    # db.refresh(teacher)
     return []

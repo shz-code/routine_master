@@ -4,6 +4,7 @@ const TableRow = ({ index, data }) => {
       <tr>
         <td className="py-3">{index + 1}</td>
         <td>{data.name}</td>
+        <td>{data.shortCode}</td>
         <td>{data.email}</td>
         <td>{data.phoneNo}</td>
       </tr>
@@ -13,12 +14,13 @@ const TableRow = ({ index, data }) => {
 
 const AllTeachersTable = ({ allRequests }) => {
   return (
-    <div className="overflow-x-scroll mt-8">
+    <div className="overflow-x-auto mt-8">
       <table className="w-full text-center">
         <thead>
           <tr>
             <th>Serial</th>
             <th>Teacher Name</th>
+            <th>Teacher ShortCode</th>
             <th>Teacher Email</th>
             <th>Teacher Phone</th>
           </tr>
