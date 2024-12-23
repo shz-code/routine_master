@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.params import Depends
 from sqlmodel import Session, select
+from fastapi import status
+
 from src.lib.db import get_db
 from src.models.teacher import Teacher
-from fastapi import status
 router = APIRouter()
 
 

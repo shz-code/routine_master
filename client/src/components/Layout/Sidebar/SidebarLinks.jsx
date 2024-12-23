@@ -112,12 +112,12 @@ const SidebarLinks = ({ setSidebarOpen }) => {
       pages: [
         {
           name: "Add Time slot",
-          url: "/miscellaneous/timeSlot",
+          url: "/timeSlot/new",
           icon: "description",
         },
         {
           name: "All Time slots",
-          url: "/miscellaneous/timeSlot/all",
+          url: "/timeSlot/all",
           icon: "description",
         },
       ],

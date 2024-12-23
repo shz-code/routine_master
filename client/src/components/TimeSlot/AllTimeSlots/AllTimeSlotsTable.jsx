@@ -3,7 +3,12 @@ const TableRow = ({ index, data }) => {
     <>
       <tr>
         <td className="py-3">{index + 1}</td>
-        <td>{data.name}</td>
+        <td>
+          {data.startTime} - {data.endTime}
+        </td>
+        <td>
+          {data.altStartTime} - {data.altEndTime}
+        </td>
       </tr>
     </>
   );
@@ -16,7 +21,8 @@ const AllTimeSlotsTable = ({ allRequests }) => {
         <thead>
           <tr>
             <th>Serial</th>
-            <th>Time Slot Name</th>
+            <th>Time Slot</th>
+            <th>Alternative Time Slot</th>
           </tr>
         </thead>
         <tbody>

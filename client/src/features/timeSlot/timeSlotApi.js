@@ -4,12 +4,12 @@ const timeSlotApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getTImeSlots: builder.query({
       query: () => ({
-        url: `/TimeSlot`,
+        url: `/timeSlot`,
       }),
     }),
     createTimeSlot: builder.mutation({
       query: (body) => ({
-        url: `/TimeSlot`,
+        url: `/timeSlot`,
         method: "POST",
         body: body,
       }),

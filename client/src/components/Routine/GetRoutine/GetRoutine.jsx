@@ -50,7 +50,7 @@ const GetRoutine = () => {
 
   useEffect(() => {
     if (isError) {
-      toast.error(error.data ? error.data : error.status);
+      toast.error(error.data?.detail);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isError]);

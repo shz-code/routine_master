@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from src.routes.timeSlotRouter import router as timeSlotRouter
 from src.routes.teacherRouter import router as teacherRouter
 from src.lib.db import engine
 from sqlmodel import SQLModel
@@ -21,6 +22,7 @@ def on_startup():
 
 
 app.include_router(teacherRouter, prefix='/teacher', tags=['Teacher'])
+app.include_router(timeSlotRouter, prefix='/timeSlot', tags=['Time Slots'])
 
 
 # Root Page

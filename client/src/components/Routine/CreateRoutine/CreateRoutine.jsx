@@ -30,23 +30,27 @@ const CreateRoutine = () => {
   const [selectedSemester, setSelectedSemester] = useState("");
 
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [times, setTimes] = useState([]);
   const [courses, setCourses] = useState([]);
   const [formSubmitAble, setFormSubmitAble] = useState(false);
 
   const {
-    data: times,
+    data: loadedTimes,
     isLoading: timeLoading,
-    isError,
+    isError: isTimeError,
     error,
   } = useGetTImeSlotsQuery();
-  const { data: teachers, isLoading: teachersLoading } = useGetTeachersQuery(
-    undefined,
-    { refetchOnMountOrArgChange: true }
-  );
-  const { data: semesters, isLoading: semestersLoading } = useGetSemestersQuery(
-    undefined,
-    { refetchOnMountOrArgChange: true }
-  );
+  const {
+    data: teachers,
+    isError: isTeacherError,
+    isLoading: teachersLoading,
+  } = useGetTeachersQuery(undefined, { refetchOnMountOrArgChange: true });
+
+  const {
+    data: semesters,
+    isLoading: semestersLoading,
+    isError: isSemesterError,
+  } = useGetSemestersQuery(undefined, { refetchOnMountOrArgChange: true });
 
   const [
     createRoutine,
@@ -58,6 +62,17 @@ const CreateRoutine = () => {
     isLoading: coursesLoading,
     isError: courseError,
   } = useGetCoursesQuery(undefined, { refetchOnMountOrArgChange: true });
+
+  const [routine, setRoutine] = useState([
+    {},
+    { day: "Saturday", courses: [] },
+    { day: "Sunday", courses: [] },
+    { day: "Monday", courses: [] },
+    { day: "Tuesday", courses: [] },
+    { day: "Wednesday", courses: [] },
+    { day: "Thursday", courses: [] },
+    { day: "Friday", courses: [] },
+  ]);
 
   useEffect(() => {
     if (!coursesLoading && !courseError && loadedCourses.length > 0) {
@@ -73,23 +88,26 @@ const CreateRoutine = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coursesLoading, courseError]);
 
-  const [routine, setRoutine] = useState([
-    {},
-    { day: "Saturday", courses: [] },
-    { day: "Sunday", courses: [] },
-    { day: "Monday", courses: [] },
-    { day: "Tuesday", courses: [] },
-    { day: "Wednesday", courses: [] },
-    { day: "Thursday", courses: [] },
-    { day: "Friday", courses: [] },
-  ]);
-
   useEffect(() => {
-    if (isError) {
-      toast.error(error.data ? error.data : error.status);
+    if (!timeLoading && !isTimeError && loadedTimes.length > 0) {
+      const t = [];
+      loadedTimes.map((l) => {
+        t.push({
+          value: l.id,
+          name: `${l.startTime} - ${l.endTime}`,
+        });
+      });
+      setTimes(t);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isError]);
+  }, [coursesLoading, courseError]);
+
+  useEffect(() => {
+    if (isTimeError) {
+      toast.error(error.data?.detail);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTimeError]);
 
   useEffect(() => {
     if (submitIsError) toast.error(submitError.data);
@@ -204,17 +222,19 @@ const CreateRoutine = () => {
               {/* Row 1 */}
               <div className="break-on-md w-full gap-2">
                 <div className="w-full">
-                  {!teachersLoading && !isError && teachers.length > 0 && (
-                    <Select
-                      label="Select Teacher"
-                      selectItems={teachers}
-                      value={selectedTeacher.id}
-                      onChange={(e) => handleTeacherChange(e)}
-                    />
-                  )}
+                  {!teachersLoading &&
+                    !isTeacherError &&
+                    teachers.length > 0 && (
+                      <Select
+                        label="Select Teacher"
+                        selectItems={teachers}
+                        value={selectedTeacher.id}
+                        onChange={(e) => handleTeacherChange(e)}
+                      />
+                    )}
                 </div>
                 <div className="w-full">
-                  {!coursesLoading && !isError && courses.length > 0 && (
+                  {!coursesLoading && !courseError && courses.length > 0 && (
                     <Select
                       label="Select Course"
                       selectItems={courses}
@@ -226,14 +246,16 @@ const CreateRoutine = () => {
               {/* Row 2 */}
               <div className="break-on-md w-full gap-2">
                 <div className="w-full">
-                  {!semestersLoading && !isError && semesters.length > 0 && (
-                    <Select
-                      label="Select Semester"
-                      selectItems={semesters}
-                      value={selectedSemester.id}
-                      onChange={(e) => handleSemesterChange(e)}
-                    />
-                  )}
+                  {!semestersLoading &&
+                    !isSemesterError &&
+                    semesters.length > 0 && (
+                      <Select
+                        label="Select Semester"
+                        selectItems={semesters}
+                        value={selectedSemester.id}
+                        onChange={(e) => handleSemesterChange(e)}
+                      />
+                    )}
                 </div>
                 <div className="w-full">
                   <Input
@@ -260,7 +282,7 @@ const CreateRoutine = () => {
                   />
                 </div>
                 <div className="w-full">
-                  {!timeLoading && !isError && times.length > 0 && (
+                  {!timeLoading && !isTimeError && times.length > 0 && (
                     <Select
                       label="Select Time"
                       selectItems={times}
@@ -300,7 +322,7 @@ const CreateRoutine = () => {
                 <tr>
                   <th>Day</th>
                   {!timeLoading &&
-                    !isError &&
+                    !isTimeError &&
                     times.length > 0 &&
                     times.map((t) => <th key={t.id}>{t.name}</th>)}
                 </tr>
@@ -310,7 +332,7 @@ const CreateRoutine = () => {
                   <tr key={d.id}>
                     <td>{d.name}</td>
                     {!timeLoading &&
-                      !isError &&
+                      !isTimeError &&
                       times.length > 0 &&
                       times.map((t) => (
                         <td key={t.id}>

@@ -6,11 +6,13 @@ import Loader from "../../ui/Loader";
 import AllTimeSlotsTable from "./AllTimeSlotsTable";
 
 const AllTimeSlots = () => {
-  const { data, isLoading, isError, error } = useGetTImeSlotsQuery();
+  const { data, isLoading, isError, error } = useGetTImeSlotsQuery(undefined, {
+    refetchOnFocus: true,
+  });
 
   useEffect(() => {
     if (isError) {
-      toast.error(error.data ? error.data : error.status);
+      toast.error(error.data?.detail);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isError]);
