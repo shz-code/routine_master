@@ -4,12 +4,12 @@ const semesterApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getSemesters: builder.query({
       query: () => ({
-        url: `/Semester`,
+        url: `/semester`,
       }),
     }),
     createSemesters: builder.mutation({
       query: (body) => ({
-        url: `/Semester`,
+        url: `/semester`,
         method: "POST",
         body: body,
       }),

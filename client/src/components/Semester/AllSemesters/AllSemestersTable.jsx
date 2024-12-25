@@ -32,7 +32,7 @@ const AllSemestersTable = ({ allRequests }) => {
                 colSpan={7}
                 className="bg-red-700 text-white font-semibold py-4"
               >
-                No Requests Found
+                No Semester Record Found
               </td>
             </tr>
           ) : (

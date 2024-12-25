@@ -6,7 +6,9 @@ import Loader from "../../ui/Loader";
 import AllSemestersTable from "./AllSemestersTable";
 
 const AllSemesters = () => {
-  const { data, isLoading, isError, error } = useGetSemestersQuery();
+  const { data, isLoading, isError, error } = useGetSemestersQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   useEffect(() => {
     if (isError) {

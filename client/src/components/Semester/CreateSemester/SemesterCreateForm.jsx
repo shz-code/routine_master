@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import { useCreateSemestersMutation } from "../../../features/semester/semesterApi";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
@@ -12,13 +13,23 @@ const SemesterCreateForm = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const [createSemesters, { isLoading }] = useCreateSemestersMutation();
+  const navigate = useNavigate();
+
+  const [createSemesters, { isLoading, isError, error }] =
+    useCreateSemestersMutation();
 
   useEffect(() => {
     if (semester != "" && year != "") {
       setSemesterName(`${semester} ${year}`);
     }
   }, [semester, year]);
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(error.data?.detail);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isError, error]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,6 +44,9 @@ const SemesterCreateForm = () => {
     });
     if (res.data) {
       toast.success("Semester created successfully");
+      setTimeout(() => {
+        navigate("/semester/all");
+      }, 1000);
     }
   };
   return (
