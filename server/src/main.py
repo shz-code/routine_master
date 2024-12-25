@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from src.routes.courseRouter import router as courseRouter
 from src.routes.timeSlotRouter import router as timeSlotRouter
 from src.routes.teacherRouter import router as teacherRouter
 from src.lib.db import engine
@@ -21,7 +22,8 @@ def on_startup():
     SQLModel.metadata.create_all(engine)
 
 
-app.include_router(teacherRouter, prefix='/teacher', tags=['Teacher'])
+app.include_router(teacherRouter, prefix='/teacher', tags=['Teachers'])
+app.include_router(courseRouter, prefix='/course', tags=['Courses'])
 app.include_router(timeSlotRouter, prefix='/timeSlot', tags=['Time Slots'])
 
 

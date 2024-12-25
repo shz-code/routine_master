@@ -6,7 +6,6 @@ const TableRow = ({ index, data }) => {
         <td>{data.courseName}</td>
         <td>{data.courseCode}</td>
         <td>{data.creditHours}</td>
-        <td>{data.prerequisiteCourseName}</td>
       </tr>
     </>
   );
@@ -22,7 +21,6 @@ const AllCoursesTable = ({ allRequests }) => {
             <th>Course Name</th>
             <th>Course Code</th>
             <th>Credit Hours</th>
-            <th>Prerequisite Course</th>
           </tr>
         </thead>
         <tbody>
@@ -32,7 +30,7 @@ const AllCoursesTable = ({ allRequests }) => {
                 colSpan={7}
                 className="bg-red-700 text-white font-semibold py-4"
               >
-                No Requests Found
+                No Courses Found
               </td>
             </tr>
           ) : (

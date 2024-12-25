@@ -40,8 +40,6 @@ const TeacherForm = () => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile && uploadedFile.type === "text/csv") {
       setFile(uploadedFile);
-    } else {
-      setError("Please upload a valid CSV file.");
     }
   };
 
@@ -113,7 +111,7 @@ const TeacherForm = () => {
       <div>
         <Button
           type="submit"
-          disabled={(!name || !email || !phone || isLoading || !code) && !file}
+          disabled={(!name || !email || !phone || !code) && !file}
           loading={isLoading}
         >
           Submit

@@ -16,7 +16,7 @@ const TableRow = ({ index, data }) => {
 
 const AllTimeSlotsTable = ({ allRequests }) => {
   return (
-    <div className="overflow-x-scroll mt-8">
+    <div className="overflow-x-auto mt-8">
       <table className="w-full text-center">
         <thead>
           <tr>

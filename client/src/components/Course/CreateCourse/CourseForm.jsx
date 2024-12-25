@@ -1,64 +1,36 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import {
-  useAddCourseMutation,
-  useGetCoursesQuery,
-} from "../../../features/course/courseApi";
+import { useNavigate } from "react-router-dom";
+import { useAddCourseMutation } from "../../../features/course/courseApi";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
-import Select from "../../ui/Select";
 
 const CourseForm = () => {
-  const [courses, setCourses] = useState([]);
-
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [credit, setCredit] = useState("");
-  const [hasPrerequisite, setHasPrerequisite] = useState(false);
-
-  const [selectedCourse, setSelectedCourse] = useState(null);
-
-  const {
-    data: loadedCourses,
-    isLoading: coursesLoading,
-    isError: courseError,
-  } = useGetCoursesQuery();
+  const [file, setFile] = useState(null);
 
   const [addCourse, { isLoading, isError, error }] = useAddCourseMutation();
 
-  useEffect(() => {
-    if (!coursesLoading && !courseError && loadedCourses.length > 0) {
-      const cL = [];
-      loadedCourses.map((l) => {
-        cL.push({
-          value: l.courseCode,
-          label: l.courseCode,
-        });
-      });
-      setCourses(cL);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coursesLoading, courseError]);
-
-  const handleSelectCourse = (e) => {
-    loadedCourses.map((l) => {
-      if (e.target.value === l.courseCode) {
-        setSelectedCourse(l);
-      }
-    });
-  };
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await addCourse({
-      courseName: name,
-      courseCode: code,
-      creditHours: credit,
-      hasPrerequisite: hasPrerequisite,
-      prerequisiteId: selectedCourse ? selectedCourse.id : null,
-    });
+
+    const formData = new FormData();
+    formData.append("courseName", name);
+    formData.append("courseCode", code);
+    formData.append("creditHours", credit);
+    formData.append("file", file);
+
+    const res = await addCourse(formData);
+
     if (res.data) {
       toast.success("Course created successfully");
+      setTimeout(() => {
+        navigate("/course/all");
+      }, 1000);
     }
   };
 
@@ -68,6 +40,13 @@ const CourseForm = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isError, error]);
+
+  const handleFileChange = (e) => {
+    const uploadedFile = e.target.files[0];
+    if (uploadedFile && uploadedFile.type === "text/csv") {
+      setFile(uploadedFile);
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mt-4">
@@ -79,6 +58,7 @@ const CourseForm = () => {
           type="text"
           required
           value={name}
+          disabled={file}
           onChange={(e) => setName(e.target.value)}
         />
       </div>
@@ -90,6 +70,7 @@ const CourseForm = () => {
           type="text"
           required
           value={code}
+          disabled={file}
           onChange={(e) => setCode(e.target.value)}
         />
       </div>
@@ -103,37 +84,29 @@ const CourseForm = () => {
           max={4}
           min={0}
           value={credit}
+          disabled={file}
           onChange={(e) => setCredit(e.target.value)}
         />
       </div>
-      <div className="w-full">
-        <label className="flex gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={hasPrerequisite}
-            onChange={() => {
-              setHasPrerequisite((prev) => !prev);
-            }}
-          />
-          Course has prerequisite?
-        </label>
-      </div>
-
-      <div className="w-full">
-        {!coursesLoading && !courseError && courses.length > 0 && (
-          <Select
-            label="Select Prerequisite Course"
-            selectItems={courses}
-            onChange={(e) => handleSelectCourse(e)}
-            disabled={!hasPrerequisite}
-          />
-        )}
+      <div className="w-full border-t-4 border-gray-200 pt-2">
+        <Input
+          label="Course Information"
+          id="info"
+          type="file"
+          accept=".csv"
+          disabled={name || code || credit}
+          onChange={handleFileChange}
+        />
+        <p className="text-sm text-red-600 font-bold mt-2">
+          Upload an CSV file with fields (Serial, Course Name, Course Code,
+          Credit Hours)
+        </p>
       </div>
 
       <div>
         <Button
           type="submit"
-          disabled={!name || !code || !credit || isLoading}
+          disabled={(!name || !code || !credit) && !file}
           loading={isLoading}
         >
           Submit
