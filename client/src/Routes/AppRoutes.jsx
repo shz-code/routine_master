@@ -8,6 +8,7 @@ import CreateRoutine from "../components/Routine/CreateRoutine/CreateRoutine";
 import GetRoutine from "../components/Routine/GetRoutine/GetRoutine";
 import AllSemesters from "../components/Semester/AllSemesters/AllSemesters";
 import CreateSemester from "../components/Semester/CreateSemester/CreateSemester";
+import EditSemester from "../components/Semester/EditSemester/EditSemester";
 import AllTeachers from "../components/Teacher/AllTeachers/AllTeachers";
 import CreateTeacher from "../components/Teacher/CreateTeacher/CreateTeacher";
 import AllTimeSlots from "../components/TimeSlot/AllTimeSlots/AllTimeSlots";
@@ -36,6 +37,7 @@ const AppRoutes = () => {
         <Route path="/semester">
           <Route path="new" element={<CreateSemester />} />
           <Route path="all" element={<AllSemesters />} />
+          <Route path="edit/:id" element={<EditSemester />} />
         </Route>
 
         <Route path="/timeSlot">

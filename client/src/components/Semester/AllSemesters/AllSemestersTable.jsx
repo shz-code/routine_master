@@ -1,4 +1,17 @@
+import { Edit, Trash2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useDeleteSemesterMutation } from "../../../features/semester/semesterApi";
+
 const TableRow = ({ index, data }) => {
+  const [deleteSemester] = useDeleteSemesterMutation();
+
+  const handleDelete = async () => {
+    let confirmDelete = window.confirm("Are you sure you want to delete?");
+    if (confirmDelete) {
+      await deleteSemester(data.id);
+    }
+  };
+
   return (
     <>
       <tr>
@@ -7,6 +20,22 @@ const TableRow = ({ index, data }) => {
         <td>{data.year}</td>
         <td>{new Date(data.startDate).toDateString()}</td>
         <td>{new Date(data.endDate).toDateString()}</td>
+        <td>
+          <div className="flex justify-center gap-2 items-center cursor-pointer">
+            <Link
+              to={`/semester/edit/${data.id}`}
+              className="bg-gray-100 rounded p-2 hover:bg-yellow-100"
+            >
+              <Edit />
+            </Link>
+            <span
+              className="bg-gray-100 rounded p-2 hover:bg-red-100"
+              onClick={handleDelete}
+            >
+              <Trash2 />
+            </span>
+          </div>
+        </td>
       </tr>
     </>
   );
@@ -14,7 +43,7 @@ const TableRow = ({ index, data }) => {
 
 const AllSemestersTable = ({ allRequests }) => {
   return (
-    <div className="overflow-x-scroll mt-8">
+    <div className="overflow-x-auto mt-8">
       <table className="w-full text-center">
         <thead>
           <tr>
@@ -23,6 +52,7 @@ const AllSemestersTable = ({ allRequests }) => {
             <th>Year</th>
             <th>Start Date</th>
             <th>End Date</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
