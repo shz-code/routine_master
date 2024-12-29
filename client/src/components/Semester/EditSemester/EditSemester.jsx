@@ -13,7 +13,7 @@ const EditSemester = () => {
       <div className="container mx-auto px-2">
         <div className="p-4 border rounded bg-gray-100 mt-4">
           <div>
-            <h2>Add Semester Information</h2>
+            <h2>Edit Semester Information</h2>
           </div>
           {isLoading && <Loader />}
           {!isError && !isLoading && data && <EditSemesterForm data={data} />}

@@ -1,4 +1,16 @@
+import { Edit, Trash2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useDeleteTeacherMutation } from "../../../features/teacher/teacherApi";
+
 const TableRow = ({ index, data }) => {
+  const [deleteTeacher] = useDeleteTeacherMutation();
+  const handleDelete = async () => {
+    let confirmDelete = window.confirm("Are you sure you want to delete?");
+    if (confirmDelete) {
+      await deleteTeacher(data.id);
+    }
+  };
+
   return (
     <>
       <tr>
@@ -7,6 +19,22 @@ const TableRow = ({ index, data }) => {
         <td>{data.shortCode}</td>
         <td>{data.email}</td>
         <td>{data.phoneNo}</td>
+        <td>
+          <div className="flex justify-center gap-2 items-center cursor-pointer">
+            <Link
+              to={`/teacher/edit/${data.id}`}
+              className="bg-gray-100 rounded p-2 hover:bg-yellow-100"
+            >
+              <Edit />
+            </Link>
+            <span
+              className="bg-gray-100 rounded p-2 hover:bg-red-100"
+              onClick={handleDelete}
+            >
+              <Trash2 />
+            </span>
+          </div>
+        </td>
       </tr>
     </>
   );
@@ -23,6 +51,7 @@ const AllTeachersTable = ({ allRequests }) => {
             <th>Teacher ShortCode</th>
             <th>Teacher Email</th>
             <th>Teacher Phone</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>

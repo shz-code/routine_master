@@ -23,10 +23,44 @@ const teacherApi = apiSlice.injectEndpoints({
         url: `/teacher`,
       }),
     }),
-    getTeacherInfo: builder.query({
+    getTeacher: builder.query({
       query: (id) => ({
         url: `/teacher/${id}`,
       }),
+    }),
+    editTeacher: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `/teacher/${id}`,
+        method: "PATCH",
+        body: body,
+      }),
+      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
+        const res = await queryFulfilled;
+        dispatch(
+          apiSlice.util.updateQueryData(
+            "getTeacher",
+            id.toString(),
+            (draft) => {
+              return res.data;
+            }
+          )
+        );
+      },
+    }),
+    deleteTeacher: builder.mutation({
+      query: (id) => ({
+        url: `/teacher/${id}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        const res = await queryFulfilled;
+
+        dispatch(
+          apiSlice.util.updateQueryData("getTeachers", undefined, (draft) => {
+            return draft.filter((teacher) => teacher.id !== id);
+          })
+        );
+      },
     }),
   }),
 });
@@ -34,5 +68,7 @@ const teacherApi = apiSlice.injectEndpoints({
 export const {
   useGetTeachersQuery,
   useAddTeacherMutation,
-  useGetTeacherInfoQuery,
+  useGetTeacherQuery,
+  useEditTeacherMutation,
+  useDeleteTeacherMutation,
 } = teacherApi;

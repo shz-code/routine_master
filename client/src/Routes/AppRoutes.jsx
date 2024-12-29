@@ -11,6 +11,7 @@ import CreateSemester from "../components/Semester/CreateSemester/CreateSemester
 import EditSemester from "../components/Semester/EditSemester/EditSemester";
 import AllTeachers from "../components/Teacher/AllTeachers/AllTeachers";
 import CreateTeacher from "../components/Teacher/CreateTeacher/CreateTeacher";
+import EditTeacher from "../components/Teacher/EditTeacher/EditTeacher";
 import AllTimeSlots from "../components/TimeSlot/AllTimeSlots/AllTimeSlots";
 import CreateTimeSlot from "../components/TimeSlot/CreateTimeSlot/CreateTimeSlot";
 
@@ -28,6 +29,7 @@ const AppRoutes = () => {
         <Route path="/teacher">
           <Route path="new" element={<CreateTeacher />} />
           <Route path="all" element={<AllTeachers />} />
+          <Route path="edit/:id" element={<EditTeacher />} />
         </Route>
         <Route path="/course">
           <Route path="new" element={<CreateCourse />} />
