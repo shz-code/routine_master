@@ -13,7 +13,6 @@ const teacherApi = apiSlice.injectEndpoints({
         try {
           const res = await queryFulfilled;
         } catch (err) {
-          console.error(err);
           toast.error(err.error?.data?.detail);
         }
       },

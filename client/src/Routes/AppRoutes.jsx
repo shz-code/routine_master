@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import AllCourses from "../components/Course/AllCourses/AllCourses";
 import CreateCourse from "../components/Course/CreateCourse/CreateCourse";
+import EditCourse from "../components/Course/EditCourse/EditCourse";
 import { Home } from "../components/Home/Home";
 import Layout from "../components/Layout/Layout";
 import { NotFound } from "../components/NotFound";
@@ -35,6 +36,7 @@ const AppRoutes = () => {
         <Route path="/course">
           <Route path="new" element={<CreateCourse />} />
           <Route path="all" element={<AllCourses />} />
+          <Route path="edit/:id" element={<EditCourse />} />
         </Route>
 
         <Route path="/semester">
