@@ -7,6 +7,11 @@ const timeSlotApi = apiSlice.injectEndpoints({
         url: `/timeSlot`,
       }),
     }),
+    getTimeSlot: builder.query({
+      query: (id) => ({
+        url: `/timeSlot/${id}`,
+      }),
+    }),
     createTimeSlot: builder.mutation({
       query: (body) => ({
         url: `/timeSlot`,
@@ -14,7 +19,47 @@ const timeSlotApi = apiSlice.injectEndpoints({
         body: body,
       }),
     }),
+    editTimeSlot: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `/timeSlot/${id}`,
+        method: "PATCH",
+        body: body,
+      }),
+      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
+        const res = await queryFulfilled;
+        dispatch(
+          apiSlice.util.updateQueryData(
+            "getTimeSlot",
+            id.toString(),
+            (draft) => {
+              return res.data;
+            }
+          )
+        );
+      },
+    }),
+    deleteTimeSlot: builder.mutation({
+      query: (id) => ({
+        url: `/timeSlot/${id}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+
+        dispatch(
+          apiSlice.util.updateQueryData("getTImeSlots", undefined, (draft) => {
+            return draft.filter((timeSlot) => timeSlot.id !== id);
+          })
+        );
+      },
+    }),
   }),
 });
 
-export const { useGetTImeSlotsQuery, useCreateTimeSlotMutation } = timeSlotApi;
+export const {
+  useGetTImeSlotsQuery,
+  useCreateTimeSlotMutation,
+  useGetTimeSlotQuery,
+  useEditTimeSlotMutation,
+  useDeleteTimeSlotMutation,
+} = timeSlotApi;

@@ -14,6 +14,7 @@ import CreateTeacher from "../components/Teacher/CreateTeacher/CreateTeacher";
 import EditTeacher from "../components/Teacher/EditTeacher/EditTeacher";
 import AllTimeSlots from "../components/TimeSlot/AllTimeSlots/AllTimeSlots";
 import CreateTimeSlot from "../components/TimeSlot/CreateTimeSlot/CreateTimeSlot";
+import EditTimeSlot from "../components/TimeSlot/EditTimeSlot/EditTimeSlot";
 
 const AppRoutes = () => {
   return (
@@ -45,6 +46,7 @@ const AppRoutes = () => {
         <Route path="/timeSlot">
           <Route path="new" element={<CreateTimeSlot />} />
           <Route path="all" element={<AllTimeSlots />} />
+          <Route path="edit/:id" element={<EditTimeSlot />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

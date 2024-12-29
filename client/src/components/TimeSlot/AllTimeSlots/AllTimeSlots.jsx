@@ -7,7 +7,7 @@ import AllTimeSlotsTable from "./AllTimeSlotsTable";
 
 const AllTimeSlots = () => {
   const { data, isLoading, isError, error } = useGetTImeSlotsQuery(undefined, {
-    refetchOnFocus: true,
+    refetchOnMountOrArgChange: true,
   });
 
   useEffect(() => {

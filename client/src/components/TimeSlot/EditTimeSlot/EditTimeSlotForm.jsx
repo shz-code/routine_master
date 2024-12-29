@@ -1,30 +1,33 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { useCreateTimeSlotMutation } from "../../../features/timeSlot/timeSlotApi";
+import { useEditTimeSlotMutation } from "../../../features/timeSlot/timeSlotApi";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
 
-const TimeSlotForm = () => {
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [altStartTime, setAltStartTime] = useState("");
-  const [altEndTime, setAltEndTime] = useState("");
+const EditTimeSlotForm = ({ data }) => {
+  const [startTime, setStartTime] = useState(data.startTime);
+  const [endTime, setEndTime] = useState(data.endTime);
+  const [altStartTime, setAltStartTime] = useState(data.altStartTime);
+  const [altEndTime, setAltEndTime] = useState(data.altEndTime);
 
-  const [createTimeSlot, { isLoading, isError }] = useCreateTimeSlotMutation();
+  const [editTimeSlot, { isLoading, isError }] = useEditTimeSlotMutation();
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await createTimeSlot({
-      startTime: startTime.trim(),
-      endTime: endTime.trim(),
-      altStartTime: altStartTime.trim(),
-      altEndTime: altEndTime.trim(),
+    const res = await editTimeSlot({
+      id: data.id,
+      body: {
+        startTime: startTime.trim(),
+        endTime: endTime.trim(),
+        altStartTime: altStartTime.trim(),
+        altEndTime: altEndTime.trim(),
+      },
     });
     if (res.data) {
-      toast.success("TimeSlot created successfully");
+      toast.success("TimeSlot updated successfully");
       setTimeout(() => {
         navigate("/timeSlot/all");
       }, 1000);
@@ -89,11 +92,11 @@ const TimeSlotForm = () => {
           disabled={!endTime || !startTime || isLoading}
           loading={isLoading}
         >
-          Submit
+          Update
         </Button>
       </div>
     </form>
   );
 };
 
-export default TimeSlotForm;
+export default EditTimeSlotForm;
