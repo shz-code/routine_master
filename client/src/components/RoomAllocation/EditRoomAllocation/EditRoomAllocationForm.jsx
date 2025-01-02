@@ -6,7 +6,7 @@ import Select from "../../ui/AppSelect";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
 
-const EditSemesterForm = ({ data }) => {
+const EditRoomAllocationForm = ({ data }) => {
   const [semesterName, setSemesterName] = useState(data.name);
   const [semester, setSemester] = useState(data.name.split(" ")[0]);
   const [year, setYear] = useState(data.year);
@@ -127,4 +127,4 @@ const EditSemesterForm = ({ data }) => {
   );
 };
 
-export default EditSemesterForm;
+export default EditRoomAllocationForm;

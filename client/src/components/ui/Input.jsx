@@ -24,7 +24,7 @@ const Input = ({
         required={required}
         {...rest}
         className={twMerge(
-          ` px-4 py-2 rounded shadow-none bg-transparent border-2 border-slate-200  text-black w-full ${
+          ` px-4 py-1.5 rounded shadow-none bg-transparent outline-blue-500 border border-gray-300 text-black w-full ${
             disabled ? "bg-slate-100 cursor-not-allowed" : "bg-white"
           }`,
           className

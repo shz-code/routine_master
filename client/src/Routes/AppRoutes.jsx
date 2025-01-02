@@ -5,6 +5,9 @@ import EditCourse from "../components/Course/EditCourse/EditCourse";
 import { Home } from "../components/Home/Home";
 import Layout from "../components/Layout/Layout";
 import { NotFound } from "../components/NotFound";
+import AllRoomAllocations from "../components/RoomAllocation/AllRoomAllocations/AllRoomAllocations";
+import CreateRoomAllocation from "../components/RoomAllocation/CreateRoomAllocation/CreateRoomAllocation";
+import EditRoomAllocation from "../components/RoomAllocation/EditRoomAllocation/EditRoomAllocation";
 import CreateRoutine from "../components/Routine/CreateRoutine/CreateRoutine";
 import GetRoutine from "../components/Routine/GetRoutine/GetRoutine";
 import AllSemesters from "../components/Semester/AllSemesters/AllSemesters";
@@ -49,6 +52,12 @@ const AppRoutes = () => {
           <Route path="new" element={<CreateTimeSlot />} />
           <Route path="all" element={<AllTimeSlots />} />
           <Route path="edit/:id" element={<EditTimeSlot />} />
+        </Route>
+
+        <Route path="/roomAllocation">
+          <Route path="new" element={<CreateRoomAllocation />} />
+          <Route path="all" element={<AllRoomAllocations />} />
+          <Route path="edit/:id" element={<EditRoomAllocation />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

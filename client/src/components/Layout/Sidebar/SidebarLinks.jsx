@@ -123,6 +123,24 @@ const SidebarLinks = ({ setSidebarOpen }) => {
       ],
     },
     {
+      name: "Room Allocation",
+      url: "roomAllocation",
+      icon: "description",
+      nested: true,
+      pages: [
+        {
+          name: "New Allocation",
+          url: "/roomAllocation/new",
+          icon: "description",
+        },
+        {
+          name: "All Records",
+          url: "/roomAllocation/all",
+          icon: "description",
+        },
+      ],
+    },
+    {
       name: "Routine",
       url: "routine",
       icon: "description",

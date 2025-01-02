@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useCreateSemestersMutation } from "../../../features/semester/semesterApi";
+import AppSelect from "../../ui/AppSelect";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
-import Select from "../../ui/Select";
 
 const SemesterCreateForm = () => {
   const [semesterName, setSemesterName] = useState("");
@@ -77,7 +77,7 @@ const SemesterCreateForm = () => {
         />
       </div>
       <div>
-        <Select
+        <AppSelect
           label="Select Semester"
           required
           selectItems={[
@@ -86,7 +86,7 @@ const SemesterCreateForm = () => {
             { value: "Fall", label: "Fall" },
           ]}
           value={semester}
-          onChange={(e) => setSemester(e.target.value)}
+          handleChange={(e) => setSemester(e.value)}
         />
       </div>
       <div className="w-full">

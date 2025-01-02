@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { useEditSemesterMutation } from "../../../features/semester/semesterApi";
-import Select from "../../ui/AppSelect";
+import { useCreateSemestersMutation } from "../../../features/semester/semesterApi";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
+// import Select from "../../ui/Select";
+import AppSelect from "../../ui/AppSelect";
 
-const EditSemesterForm = ({ data }) => {
-  const [semesterName, setSemesterName] = useState(data.name);
-  const [semester, setSemester] = useState(data.name.split(" ")[0]);
-  const [year, setYear] = useState(data.year);
-  const [startDate, setStartDate] = useState(data.startDate);
-  const [endDate, setEndDate] = useState(data.endDate);
+const CreateRoomAllocationForm = () => {
+  const [semesterName, setSemesterName] = useState("");
+  const [semester, setSemester] = useState("");
+  const [year, setYear] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const navigate = useNavigate();
 
-  const [editSemester, { isLoading, isError, error }] =
-    useEditSemesterMutation();
+  const [createSemesters, { isLoading, isError, error }] =
+    useCreateSemestersMutation();
 
   useEffect(() => {
     if (semester != "" && year != "") {
@@ -36,17 +37,14 @@ const EditSemesterForm = ({ data }) => {
     if (endDate < startDate) {
       toast.error("Semester end date cannot be before start date");
     }
-    const res = await editSemester({
-      id: data.id,
-      body: {
-        year: year,
-        name: semesterName,
-        startDate: startDate,
-        endDate: endDate,
-      },
+    const res = await createSemesters({
+      year: year,
+      name: semesterName,
+      startDate: startDate,
+      endDate: endDate,
     });
     if (res.data) {
-      toast.success("Semester updated successfully");
+      toast.success("Semester created successfully");
       setTimeout(() => {
         navigate("/semester/all");
       }, 1000);
@@ -54,6 +52,7 @@ const EditSemesterForm = ({ data }) => {
   };
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+      <div className="w-full"></div>
       <div className="w-full">
         <Input
           label="Semester Name"
@@ -80,7 +79,7 @@ const EditSemesterForm = ({ data }) => {
         />
       </div>
       <div>
-        <Select
+        <AppSelect
           label="Select Semester"
           required
           selectItems={[
@@ -89,7 +88,7 @@ const EditSemesterForm = ({ data }) => {
             { value: "Fall", label: "Fall" },
           ]}
           value={semester}
-          onChange={(e) => setSemester(e.target.value)}
+          handleChange={(e) => setSemester(e.value)}
         />
       </div>
       <div className="w-full">
@@ -120,11 +119,11 @@ const EditSemesterForm = ({ data }) => {
           disabled={!semesterName || !year || !startDate || !endDate}
           loading={isLoading}
         >
-          Update
+          Submit
         </Button>
       </div>
     </form>
   );
 };
 
-export default EditSemesterForm;
+export default CreateRoomAllocationForm;

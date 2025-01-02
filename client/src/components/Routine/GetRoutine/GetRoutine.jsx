@@ -3,8 +3,8 @@ import toast from "react-hot-toast";
 import { useGetSemestersQuery } from "../../../features/semester/semesterApi";
 import { useGetTeachersQuery } from "../../../features/teacher/teacherApi";
 import { useGetTImeSlotsQuery } from "../../../features/timeSlot/timeSlotApi";
+import Select from "../../ui/AppSelect";
 import Button from "../../ui/Button";
-import Select from "../../ui/Select";
 
 const days = [
   { id: 1, name: "Saturday" },
