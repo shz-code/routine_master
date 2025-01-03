@@ -28,13 +28,9 @@ const timeSlotApi = apiSlice.injectEndpoints({
       async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
         const res = await queryFulfilled;
         dispatch(
-          apiSlice.util.updateQueryData(
-            "getTimeSlot",
-            id.toString(),
-            (draft) => {
-              return res.data;
-            }
-          )
+          apiSlice.util.updateQueryData("getTimeSlot", id.toString(), () => {
+            return res.data;
+          })
         );
       },
     }),

@@ -1,29 +1,59 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { useCreateSemestersMutation } from "../../../features/semester/semesterApi";
+import { useCreateRoomAllocationMutation } from "../../../features/roomAllocation/roomAllocationApi";
+import { useGetSemestersQuery } from "../../../features/semester/semesterApi";
+import { useGetTImeSlotsQuery } from "../../../features/timeSlot/timeSlotApi";
+import AppSelect from "../../ui/AppSelect";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
-// import Select from "../../ui/Select";
-import AppSelect from "../../ui/AppSelect";
 
 const CreateRoomAllocationForm = () => {
-  const [semesterName, setSemesterName] = useState("");
-  const [semester, setSemester] = useState("");
-  const [year, setYear] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [semesters, setSemesters] = useState([]);
+  const [selectedSemester, setSelectedSemester] = useState("");
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+  const [rooms, setRooms] = useState(0);
 
   const navigate = useNavigate();
 
-  const [createSemesters, { isLoading, isError, error }] =
-    useCreateSemestersMutation();
+  const [createRoomAllocation, { isLoading, isError, error }] =
+    useCreateRoomAllocationMutation();
+
+  // Fetch semesters
+  const {
+    data,
+    isLoading: isSemesterLoading,
+    isError: isSemesterError,
+  } = useGetSemestersQuery();
 
   useEffect(() => {
-    if (semester != "" && year != "") {
-      setSemesterName(`${semester} ${year}`);
+    if (!isSemesterError && !isSemesterLoading) {
+      const sem = data.map((s) => {
+        return { label: s.name, value: s.id };
+      });
+      setSemesters(sem);
     }
-  }, [semester, year]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSemesterLoading, isSemesterError]);
+
+  // Fetch timeSlots
+  const {
+    data: timeSlotData,
+    isLoading: isTimeSlotLoading,
+    isError: isTimeSlotError,
+  } = useGetTImeSlotsQuery();
+
+  useEffect(() => {
+    if (!isTimeSlotError && !isTimeSlotLoading) {
+      const ts = timeSlotData.map((s) => {
+        return { label: `${s.startTime} - ${s.endTime}`, value: s.id };
+      });
+
+      setTimeSlots(ts);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTimeSlotLoading, isTimeSlotError]);
 
   useEffect(() => {
     if (isError) {
@@ -34,89 +64,53 @@ const CreateRoomAllocationForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (endDate < startDate) {
-      toast.error("Semester end date cannot be before start date");
-    }
-    const res = await createSemesters({
-      year: year,
-      name: semesterName,
-      startDate: startDate,
-      endDate: endDate,
+
+    const res = await createRoomAllocation({
+      timeSlot: selectedTimeSlot,
+      semester: selectedSemester,
+      rooms: rooms,
     });
     if (res.data) {
-      toast.success("Semester created successfully");
+      toast.success("Room Allocation created successfully");
       setTimeout(() => {
-        navigate("/semester/all");
+        navigate("/roomAllocation/all");
       }, 1000);
     }
   };
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-      <div className="w-full"></div>
-      <div className="w-full">
-        <Input
-          label="Semester Name"
-          id="semesterName"
-          placeholder="Enter Semester Name. Ex: Summer 2024"
-          type="text"
-          required
-          value={semesterName}
-          disabled
-          onChange={(e) => setSemesterName(e.target.value)}
-        />
-      </div>
-      <div className="w-full">
-        <Input
-          label="Year"
-          id="year"
-          placeholder="Enter Year"
-          type="number"
-          required
-          value={year}
-          min={2024}
-          max={2026}
-          onChange={(e) => setYear(e.target.value)}
-        />
-      </div>
       <div>
         <AppSelect
           label="Select Semester"
           required
-          selectItems={[
-            { value: "Spring", label: "Spring" },
-            { value: "Summer", label: "Summer" },
-            { value: "Fall", label: "Fall" },
-          ]}
-          value={semester}
-          handleChange={(e) => setSemester(e.value)}
+          selectItems={semesters}
+          handleChange={(e) => setSelectedSemester(e.value)}
+        />
+      </div>
+      <div>
+        <AppSelect
+          label="Select Time Slot"
+          required
+          selectItems={timeSlots}
+          handleChange={(e) => setSelectedTimeSlot(e.value)}
         />
       </div>
       <div className="w-full">
         <Input
-          label="Start Date"
-          id="startDate"
-          type="date"
+          label="Total Rooms"
+          id="totalStudents"
+          type="number"
           required
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-        />
-      </div>
-      <div className="w-full">
-        <Input
-          label="End Date"
-          id="endDate"
-          placeholder="Enter Teacher Phone Number"
-          type="date"
-          required
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
+          min={0}
+          value={rooms}
+          onChange={(e) => setRooms(e.target.value)}
         />
       </div>
 
       <div>
         <Button
           type="submit"
-          disabled={!semesterName || !year || !startDate || !endDate}
+          disabled={!rooms | isLoading | !selectedSemester | !selectedTimeSlot}
           loading={isLoading}
         >
           Submit
