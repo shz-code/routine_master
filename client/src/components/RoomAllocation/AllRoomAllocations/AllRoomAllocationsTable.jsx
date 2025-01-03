@@ -1,14 +1,14 @@
 import { Edit, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useDeleteSemesterMutation } from "../../../features/semester/semesterApi";
+import { useDeleteRoomAllocationMutation } from "../../../features/roomAllocation/roomAllocationApi";
 
 const TableRow = ({ index, data }) => {
-  const [deleteSemester] = useDeleteSemesterMutation();
+  const [deleteRoomAllocation] = useDeleteRoomAllocationMutation();
 
   const handleDelete = async () => {
     let confirmDelete = window.confirm("Are you sure you want to delete?");
     if (confirmDelete) {
-      await deleteSemester(data.id);
+      await deleteRoomAllocation(data.id);
     }
   };
 
@@ -16,14 +16,17 @@ const TableRow = ({ index, data }) => {
     <>
       <tr>
         <td className="py-3">{index + 1}</td>
-        <td>{data.name}</td>
-        <td>{data.year}</td>
-        <td>{new Date(data.startDate).toDateString()}</td>
-        <td>{new Date(data.endDate).toDateString()}</td>
+        <td>{data.semester.name}</td>
+        <td>
+          {data.timeSlot.startTime} - {data.timeSlot.endTime}
+        </td>
+        <td>{data.rooms}</td>
+        <td>{data.bookedRooms}</td>
+        <td>{data.rooms - data.bookedRooms}</td>
         <td>
           <div className="flex justify-center gap-2 items-center cursor-pointer">
             <Link
-              to={`/semester/edit/${data.id}`}
+              to={`/roomAllocation/edit/${data.id}`}
               className="bg-gray-100 rounded p-2 hover:bg-yellow-100"
             >
               <Edit />
@@ -48,11 +51,12 @@ const AllRoomAllocationsTable = ({ allRequests }) => {
         <thead>
           <tr>
             <th>Serial</th>
-            <th>Semester Name</th>
-            <th>Year</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Action</th>
+            <th>Semester</th>
+            <th>Time Slot</th>
+            <th>Total Rooms</th>
+            <th>Booked Rooms</th>
+            <th>Available Rooms</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>

@@ -66,8 +66,8 @@ const CreateRoomAllocationForm = () => {
     e.preventDefault();
 
     const res = await createRoomAllocation({
-      timeSlot: selectedTimeSlot,
-      semester: selectedSemester,
+      timeSlot_id: selectedTimeSlot,
+      semester_id: selectedSemester,
       rooms: rooms,
     });
     if (res.data) {

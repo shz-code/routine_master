@@ -7,5 +7,7 @@
       "source.organizeImports": "explicit"
     },
     "css.lint.unknownAtRules": "ignore",
-    "cSpell.words": [],
+    "cSpell.words": [
+      "timeslot"
+    ],
 }

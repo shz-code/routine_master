@@ -1,14 +1,17 @@
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
-import { useGetSemestersQuery } from "../../../features/semester/semesterApi";
+import { useGetRoomAllocationsQuery } from "../../../features/roomAllocation/roomAllocationApi";
 import Loader from "../../ui/Loader";
 import AllRoomAllocationsTable from "./AllRoomAllocationsTable";
 
 const AllRoomAllocations = () => {
-  const { data, isLoading, isError, error } = useGetSemestersQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
+  const { data, isLoading, isError, error } = useGetRoomAllocationsQuery(
+    undefined,
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   useEffect(() => {
     if (isError) {
