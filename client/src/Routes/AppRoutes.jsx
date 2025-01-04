@@ -2,6 +2,10 @@ import { Route, Routes } from "react-router-dom";
 import AllCourses from "../components/Course/AllCourses/AllCourses";
 import CreateCourse from "../components/Course/CreateCourse/CreateCourse";
 import EditCourse from "../components/Course/EditCourse/EditCourse";
+import AllSections from "../components/GenerateSection/AllSections/AllSections";
+import AssignTeacher from "../components/GenerateSection/AssignTeacher/AssignTeacher";
+import CreateSection from "../components/GenerateSection/CreateSection/CreateSection";
+import EditSection from "../components/GenerateSection/EditSection/EditSection";
 import { Home } from "../components/Home/Home";
 import Layout from "../components/Layout/Layout";
 import { NotFound } from "../components/NotFound";
@@ -58,6 +62,13 @@ const AppRoutes = () => {
           <Route path="new" element={<CreateRoomAllocation />} />
           <Route path="all" element={<AllRoomAllocations />} />
           <Route path="edit/:id" element={<EditRoomAllocation />} />
+        </Route>
+
+        <Route path="/section">
+          <Route path="new" element={<CreateSection />} />
+          <Route path="all" element={<AllSections />} />
+          <Route path="edit/:id" element={<EditSection />} />
+          <Route path="assign" element={<AssignTeacher />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

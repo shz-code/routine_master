@@ -11,7 +11,6 @@ router = APIRouter()
 async def get_roomAllocations(db: Session = Depends(get_db)):
     roomAllocations = db.exec(
         select(RoomAllocation).options()).all()
-    print(roomAllocations)
     return roomAllocations
 
 

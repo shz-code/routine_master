@@ -42,7 +42,6 @@ async def create_semesters(semester: Semester, db: Session = Depends(get_db)):
 
 @router.patch("/{id}", status_code=status.HTTP_200_OK)
 async def edit_semester(id: int, semester: Semester, db: Session = Depends(get_db)):
-    print(id)
     # Check if any other semester is within the same time frame
     existing_semester = db.exec(
         select(Semester).where(

@@ -141,6 +141,29 @@ const SidebarLinks = ({ setSidebarOpen }) => {
       ],
     },
     {
+      name: "Generate Section",
+      url: "generateRoutine",
+      icon: "description",
+      nested: true,
+      pages: [
+        {
+          name: "Generate Section",
+          url: "/section/new",
+          icon: "description",
+        },
+        {
+          name: "All Sections",
+          url: "/section/all",
+          icon: "description",
+        },
+        {
+          name: "Assign Teacher",
+          url: "/section/assign",
+          icon: "description",
+        },
+      ],
+    },
+    {
       name: "Routine",
       url: "routine",
       icon: "description",
