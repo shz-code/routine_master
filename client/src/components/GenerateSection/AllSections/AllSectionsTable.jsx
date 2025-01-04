@@ -15,12 +15,11 @@ const TableRow = ({ index, data }) => {
     <>
       <tr>
         <td className="py-3">{index + 1}</td>
-        <td>
-          {data.startTime} - {data.endTime}
-        </td>
-        <td>
-          {data.altStartTime} - {data.altEndTime}
-        </td>
+        <td>{data.semester.name}</td>
+        <td>{data.course.courseName}</td>
+        <td>{data.course.courseCode}</td>
+        <td>{data.name}</td>
+        <td>{data.studentCount}</td>
         <td>
           <div className="flex justify-center gap-2 items-center cursor-pointer">
             <Link
@@ -49,8 +48,11 @@ const AllSectionsTable = ({ allRequests }) => {
         <thead>
           <tr>
             <th>Serial</th>
-            <th>Time Slot</th>
-            <th>Alternative Time Slot</th>
+            <th>Semester</th>
+            <th>Course Name</th>
+            <th>Course Code</th>
+            <th>Section Name</th>
+            <th>Student Count</th>
             <th>Action</th>
           </tr>
         </thead>

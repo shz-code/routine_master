@@ -39,7 +39,7 @@ class CourseRead(SQLModel):
     id: int
     courseName: str
     courseCode: str
-    creditHour: int
+    creditHours: int
 
 
 class TimeSlotRead(SQLModel):
@@ -64,5 +64,5 @@ class SectionRead(SQLModel):
     studentCount: int
     semester: SemesterRead
     course: CourseRead
-    timeSlot: TimeSlotRead
-    teacher: TeacherRead
+    timeSlot: Optional[TimeSlotRead]
+    teacher: Optional[TeacherRead]
