@@ -48,7 +48,7 @@ async def create_section(sections: list[Section], db: Session = Depends(get_db))
 
 
 @router.post("/single", status_code=status.HTTP_201_CREATED)
-async def create_section(section: Section, db: Session = Depends(get_db)):
+async def create_single_section(section: Section, db: Session = Depends(get_db)):
   # Validate if any of the sections already exist
     validity_check = db.exec(
         select(Section).where(
@@ -68,6 +68,28 @@ async def create_section(section: Section, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(section)
     return section
+
+
+@router.patch("/assign/{id}", response_model=SectionRead, status_code=status.HTTP_200_OK)
+async def assign_teacher_to_section(id: int, section: Section, db: Session = Depends(get_db)):
+    # Check section exists
+    existing_section = db.exec(
+        select(Section).where(Section.id == id)).first()
+
+    if not existing_section:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Section not found."
+        )
+
+    # Update the section
+    for key, value in section.model_dump(exclude_unset=True).items():
+        setattr(existing_section, key, value)
+
+    # Commit the changes
+    db.commit()
+    db.refresh(existing_section)
+    return existing_section
 
 
 @router.patch("/{id}", response_model=SectionRead, status_code=status.HTTP_200_OK)

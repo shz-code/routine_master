@@ -26,6 +26,25 @@ const sectionApi = apiSlice.injectEndpoints({
         body: body,
       }),
     }),
+    assignTeacher: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `/section/assign/${id}`,
+        method: "PATCH",
+        body: body,
+      }),
+      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
+        const res = await queryFulfilled;
+        dispatch(
+          apiSlice.util.updateQueryData(
+            "getSection",
+            id.toString(),
+            (draft) => {
+              return res.data;
+            }
+          )
+        );
+      },
+    }),
     editSection: builder.mutation({
       query: ({ id, body }) => ({
         url: `/section/${id}`,
@@ -70,4 +89,5 @@ export const {
   useGetSectionQuery,
   useEditSectionMutation,
   useDeleteSectionMutation,
+  useAssignTeacherMutation,
 } = sectionApi;
