@@ -154,7 +154,13 @@ async def delete_section(id: int, db: Session = Depends(get_db)):
     if not section:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Room Allocation not found."
+            detail="Section not found."
+        )
+
+    if section.teacher_id != None:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail="A teacher is assigned to this section. Remove teacher to delete section"
         )
 
     db.delete(section)

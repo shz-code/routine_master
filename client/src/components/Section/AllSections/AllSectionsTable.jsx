@@ -1,16 +1,22 @@
 import { Edit, Trash2 } from "lucide-react";
+import { useEffect } from "react";
+import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { useDeleteTimeSlotMutation } from "../../../features/timeSlot/timeSlotApi";
+import { useDeleteSectionMutation } from "../../../features/section/sectionApi";
 
 const TableRow = ({ index, data }) => {
-  const [deleteTimeSlot] = useDeleteTimeSlotMutation();
+  const [deleteSection, { isError, error }] = useDeleteSectionMutation();
 
   const handleDelete = async () => {
     let confirmDelete = window.confirm("Are you sure you want to delete?");
     if (confirmDelete) {
-      await deleteTimeSlot(data.id);
+      await deleteSection(data.id);
     }
   };
+
+  useEffect(() => {
+    if (isError) toast.error(error.data?.detail);
+  }, [isError]);
   return (
     <>
       <tr>
