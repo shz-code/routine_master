@@ -1,41 +1,39 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { useEditTimeSlotMutation } from "../../../features/timeSlot/timeSlotApi";
+import { useEditSectionMutation } from "../../../features/section/sectionApi";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
 
 const EditSectionForm = ({ data }) => {
-  const [startTime, setStartTime] = useState(data.startTime);
-  const [endTime, setEndTime] = useState(data.endTime);
-  const [altStartTime, setAltStartTime] = useState(data.altStartTime);
-  const [altEndTime, setAltEndTime] = useState(data.altEndTime);
+  const [sectionName, setSectionName] = useState(data.name);
+  const [studentCount, setStudentCount] = useState(data.studentCount);
 
-  const [editTimeSlot, { isLoading, isError }] = useEditTimeSlotMutation();
+  const [editSection, { isLoading, isError, error }] = useEditSectionMutation();
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await editTimeSlot({
+    const res = await editSection({
       id: data.id,
       body: {
-        startTime: startTime.trim(),
-        endTime: endTime.trim(),
-        altStartTime: altStartTime.trim(),
-        altEndTime: altEndTime.trim(),
+        name: sectionName,
+        semester_id: data.semester.id,
+        course_id: data.course.id,
+        studentCount,
       },
     });
     if (res.data) {
-      toast.success("TimeSlot updated successfully");
+      toast.success("Section updated successfully");
       setTimeout(() => {
-        navigate("/timeSlot/all");
+        navigate("/section/all");
       }, 1000);
     }
   };
 
   useEffect(() => {
-    if (isError) toast.error("There was an error!");
+    if (isError) toast.error(error.data?.detail);
   }, [isError]);
 
   return (
@@ -43,53 +41,53 @@ const EditSectionForm = ({ data }) => {
       <div className="w-full">
         <div className="w-full">
           <Input
-            label="Start Time"
-            id="startTime"
-            placeholder="Ex: 8.30"
+            label="Section Name"
+            id="sectionName"
+            placeholder="Ex: A"
             type="text"
             required
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
+            value={sectionName}
+            onChange={(e) => setSectionName(e.target.value)}
           />
         </div>
       </div>
       <div className="w-full">
         <Input
-          label="End Time"
-          id="endTime"
+          label="Section Capacity"
+          id="studentCount"
           placeholder="Ex: 9.30"
           type="text"
           required
-          value={endTime}
-          onChange={(e) => setEndTime(e.target.value)}
+          value={studentCount}
+          onChange={(e) => setStudentCount(e.target.value)}
         />
       </div>
-      <div className="w-full">
-        <Input
-          label="Ramadan Start Time"
-          id="altStartTime"
-          placeholder="Ex: 8.30"
-          type="text"
-          required
-          value={altStartTime}
-          onChange={(e) => setAltStartTime(e.target.value)}
-        />
+      <div className="flex gap-4 items-center">
+        <h3>Course:</h3>
+        <p>
+          {data.course.courseName} ({data.course.courseCode})
+        </p>
       </div>
-      <div className="w-full">
-        <Input
-          label="Ramadan End Time"
-          id="altEndTime"
-          placeholder="Ex: 9.20"
-          type="text"
-          required
-          value={altEndTime}
-          onChange={(e) => setAltEndTime(e.target.value)}
-        />
+      <div className="flex gap-4 items-center">
+        <h3>Class Time:</h3>
+        <p>
+          {data.timeSlot
+            ? `${data.timeSlot.startTime} - ${data.timeSlot.endTime}`
+            : "Not Assigned"}
+        </p>
+      </div>
+      <div className="flex gap-4 items-center">
+        <h3>Assigned Teacher:</h3>
+        <p>
+          {data.teacher
+            ? `${data.teacher.name} (${data.teacher.shortCode})`
+            : "Not Assigned"}
+        </p>
       </div>
       <div>
         <Button
           type="submit"
-          disabled={!endTime || !startTime || isLoading}
+          disabled={!sectionName || !studentCount || isLoading}
           loading={isLoading}
         >
           Update

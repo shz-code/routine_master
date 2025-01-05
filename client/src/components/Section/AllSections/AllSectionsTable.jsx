@@ -23,7 +23,7 @@ const TableRow = ({ index, data }) => {
         <td>
           <div className="flex justify-center gap-2 items-center cursor-pointer">
             <Link
-              to={`/timeSlot/edit/${data.id}`}
+              to={`/section/edit/${data.id}`}
               className="bg-gray-100 rounded p-2 hover:bg-yellow-100"
             >
               <Edit />

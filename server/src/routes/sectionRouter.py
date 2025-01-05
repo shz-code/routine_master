@@ -118,12 +118,12 @@ async def remove_teacher_from_section(id: int, db: Session = Depends(get_db)):
 @router.patch("/{id}", response_model=SectionRead, status_code=status.HTTP_200_OK)
 async def edit_section(id: int, section: Section, db: Session = Depends(get_db)):
     validityCheck = db.exec(select(Section).where(
-        (Section.semester_id == section.semester_id) & (Section.timeSlot_id == section.timeSlot_id) & (Section.id != id))).first()
+        (Section.semester_id == section.semester_id) & (Section.course_id == section.course_id) & (Section.name == section.name) & (Section.id != id))).first()
 
     if validityCheck:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Room Allocation for this timeslot already exists."
+            detail="Section already exists with selected course and semester."
         )
 
     # Check if section already exists
@@ -133,18 +133,12 @@ async def edit_section(id: int, section: Section, db: Session = Depends(get_db))
     if not existing_section:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Room Allocation not found."
+            detail="Section not found."
         )
 
     # Update the section
-    for key, value in section.model_dump(exclude_unset=True).items():
-        setattr(existing_section, key, value)
-
-    if (existing_section.rooms < existing_section.bookedRooms):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Room Allocation cannot be less than booked rooms."
-        )
+    existing_section.name = section.name
+    existing_section.studentCount = section.studentCount
 
     # Commit the changes
     db.commit()
