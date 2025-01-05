@@ -35,6 +35,38 @@ const sectionApi = apiSlice.injectEndpoints({
       async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
         const res = await queryFulfilled;
         dispatch(
+          apiSlice.util.updateQueryData("getSections", undefined, (draft) => {
+            return draft.map((section) => {
+              return section.id === id ? res.data : section;
+            });
+          })
+        );
+        dispatch(
+          apiSlice.util.updateQueryData(
+            "getSection",
+            id.toString(),
+            (draft) => {
+              return res.data;
+            }
+          )
+        );
+      },
+    }),
+    removeTeacher: builder.mutation({
+      query: (id) => ({
+        url: `/section/remove/${id}`,
+        method: "PATCH",
+      }),
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        const res = await queryFulfilled;
+        dispatch(
+          apiSlice.util.updateQueryData("getSections", undefined, (draft) => {
+            return draft.map((section) => {
+              return section.id === id ? res.data : section;
+            });
+          })
+        );
+        dispatch(
           apiSlice.util.updateQueryData(
             "getSection",
             id.toString(),
@@ -90,4 +122,5 @@ export const {
   useEditSectionMutation,
   useDeleteSectionMutation,
   useAssignTeacherMutation,
+  useRemoveTeacherMutation,
 } = sectionApi;

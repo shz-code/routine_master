@@ -1,7 +1,11 @@
-import { Check } from "lucide-react";
+import { Check, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useAssignTeacherMutation } from "../../../features/section/sectionApi";
+import { useNavigate } from "react-router-dom";
+import {
+  useAssignTeacherMutation,
+  useRemoveTeacherMutation,
+} from "../../../features/section/sectionApi";
 import { useGetTeachersQuery } from "../../../features/teacher/teacherApi";
 import AppSelect from "../../ui/AppSelect";
 
@@ -15,8 +19,17 @@ const TableRow = ({ index, data, teachers }) => {
       : null
   );
 
-  const [assignTeacher, { isLoading, isError, error }] =
-    useAssignTeacherMutation();
+  const [
+    assignTeacher,
+    { isError: isAssignTeacherError, error: assignTeacherError },
+  ] = useAssignTeacherMutation();
+
+  const [
+    removeTeacher,
+    { isError: isRemoveTeacherError, error: removeTeacherError },
+  ] = useRemoveTeacherMutation();
+
+  const navigate = useNavigate();
 
   const handleAssignTeacher = async () => {
     if (selectedTeacher) {
@@ -31,6 +44,31 @@ const TableRow = ({ index, data, teachers }) => {
       }
     } else alert("No teacher selected");
   };
+
+  const handleRemoveTeacher = async () => {
+    if (selectedTeacher) {
+      let conf = confirm("Are you sure?");
+      if (conf) {
+        const res = await removeTeacher(data.id);
+        if (res.data) {
+          toast.success("Teacher Removed Successfully");
+          setTimeout(() => navigate(0, { replace: true }), 1000);
+        }
+      }
+    } else alert("No teacher selected");
+  };
+
+  useEffect(() => {
+    if (isAssignTeacherError && assignTeacherError) {
+      toast.error(assignTeacherError.data?.detail);
+    }
+  }, [isAssignTeacherError, assignTeacherError]);
+
+  useEffect(() => {
+    if (isRemoveTeacherError && removeTeacher) {
+      toast.error(removeTeacher.data?.detail);
+    }
+  }, [isRemoveTeacherError, removeTeacherError]);
 
   return (
     <>
@@ -56,6 +94,12 @@ const TableRow = ({ index, data, teachers }) => {
               onClick={handleAssignTeacher}
             >
               <Check />
+            </span>
+            <span
+              className="bg-gray-100 rounded p-2 hover:bg-red-100"
+              onClick={handleRemoveTeacher}
+            >
+              <Trash2 />
             </span>
           </div>
         </td>

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import null
 from sqlmodel import Session, select
 from sqlalchemy.orm import joinedload
 from src.lib.db import get_db
@@ -85,6 +86,28 @@ async def assign_teacher_to_section(id: int, section: Section, db: Session = Dep
     # Update the section
     for key, value in section.model_dump(exclude_unset=True).items():
         setattr(existing_section, key, value)
+
+    # Commit the changes
+    db.commit()
+    db.refresh(existing_section)
+    return existing_section
+
+
+@router.patch("/remove/{id}", response_model=SectionRead, status_code=status.HTTP_200_OK)
+async def remove_teacher_from_section(id: int, db: Session = Depends(get_db)):
+
+    # Check section exists
+    existing_section = db.exec(
+        select(Section).where(Section.id == id)).first()
+
+    if not existing_section:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Section not found."
+        )
+
+    # Update the section
+    existing_section.teacher_id = None
 
     # Commit the changes
     db.commit()
