@@ -13,6 +13,7 @@ import { useGetTeachersQuery } from "../../../features/teacher/teacherApi";
 import { useGetTImeSlotsQuery } from "../../../features/timeSlot/timeSlotApi";
 import AppSelect from "../../ui/AppSelect";
 import Button from "../../ui/Button";
+import Input from "../../ui/Input";
 
 const days = [
   { value: 1, label: "Saturday" },
@@ -46,6 +47,8 @@ const CreateRoutine = () => {
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [selectedSection, setSelectedSection] = useState(null);
+
+  const [showSections, setShowSections] = useState(false);
 
   const [times, setTimes] = useState([]);
 
@@ -81,6 +84,8 @@ const CreateRoutine = () => {
   useEffect(() => {
     (async () => {
       if (selectedSemester && selectedTeacher) {
+        setShowSections(false);
+        setSelectedSection(null);
         // Get related sections
         const res = await getTeacherAssignedSections({
           semester_id: selectedSemester.value,
@@ -102,7 +107,7 @@ const CreateRoutine = () => {
           teacher_id: selectedTeacher.value,
         });
         if (prevRoutine.data?.length > 0) {
-          let newRoutine = _.cloneDeep(routine);
+          let newRoutine = _.cloneDeep(initialRoutine);
 
           prevRoutine.data.map((item) => {
             newRoutine[item.day_index].courses.push({
@@ -114,9 +119,8 @@ const CreateRoutine = () => {
             });
           });
           setRoutine(newRoutine);
-        } else {
-          setRoutine(initialRoutine);
         }
+        setShowSections(true);
       }
     })();
   }, [selectedSemester, selectedTeacher]);
@@ -245,28 +249,6 @@ const CreateRoutine = () => {
     }
   };
 
-  // Deprecated
-  const handleSubmit = async () => {
-    const res = await createRoutine({
-      teacherId: selectedTeacher.id,
-      semesterId: selectedSemester.id,
-      routine: routine.slice(1),
-    });
-    if (res.data) {
-      toast.success("Routine created successfully");
-      setRoutine([
-        {},
-        { day: "Saturday", courses: [] },
-        { day: "Sunday", courses: [] },
-        { day: "Monday", courses: [] },
-        { day: "Tuesday", courses: [] },
-        { day: "Wednesday", courses: [] },
-        { day: "Thursday", courses: [] },
-        { day: "Friday", courses: [] },
-      ]);
-    }
-  };
-
   return (
     <section className="py-8">
       <div className="container mx-auto px-2">
@@ -302,13 +284,21 @@ const CreateRoutine = () => {
               {/* Row 2 */}
               <div className="break-on-md w-full gap-2">
                 <div className="w-full">
-                  <AppSelect
-                    label="Select Section"
-                    selectItems={sections}
-                    disabled={sections.length === 0}
-                    loading={sections.length === 0}
-                    handleChange={(e) => setSelectedSection(e)}
-                  />
+                  {showSections ? (
+                    <AppSelect
+                      label="Select Section"
+                      selectItems={sections}
+                      disabled={sections.length === 0}
+                      loading={sections.length === 0}
+                      handleChange={(e) => setSelectedSection(e)}
+                    />
+                  ) : (
+                    <Input
+                      label="Select Section"
+                      disabled={true}
+                      placeholder="Select teacher & semester first"
+                    />
+                  )}
                 </div>
               </div>
             </div>
