@@ -173,7 +173,7 @@ const CreateRoutine = () => {
   }, [isTimeError]);
 
   useEffect(() => {
-    // if (submitIsError) toast.error(submitError.data);
+    if (submitIsError) toast.error(submitError.data?.detail);
   }, [submitIsError, submitError]);
 
   const addSchedule = async () => {

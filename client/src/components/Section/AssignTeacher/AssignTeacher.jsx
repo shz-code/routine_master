@@ -17,12 +17,22 @@ const AssignTeacher = () => {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState("");
 
+  const [content, setContent] = useState([]);
+  const [contentLoading, setContentLoading] = useState(false);
+
   // Fetch semesters
   const {
     data: semesterData,
     isLoading: isSemesterLoading,
     isError: isSemesterError,
   } = useGetSemestersQuery();
+
+  useEffect(() => {
+    if (!isLoading && !isError) {
+      setContent(data);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, isError]);
 
   useEffect(() => {
     if (!isSemesterError && !isSemesterLoading) {
@@ -46,20 +56,26 @@ const AssignTeacher = () => {
       const ts = courseData.map((c) => {
         return { label: `${c.courseName} (${c.courseCode})`, value: c.id };
       });
-
       setCourses(ts);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCourseLoading, isCourseError]);
 
-  let content = data;
-  if (selectedSemester || selectedCourse) {
-    content = data
-      .filter((d) =>
-        selectedSemester ? d.semester.id === selectedSemester : true
-      )
-      .filter((d) => (selectedCourse ? d.course.id === selectedCourse : true));
-  }
+  useEffect(() => {
+    setContentLoading(true);
+    if (selectedSemester || selectedCourse) {
+      setContent(
+        data
+          .filter((d) =>
+            selectedSemester ? d.semester.id === selectedSemester : true
+          )
+          .filter((d) =>
+            selectedCourse ? d.course.id === selectedCourse : true
+          )
+      );
+    }
+    setContentLoading(false);
+  }, [selectedSemester, selectedCourse]);
 
   return (
     <section className="py-8">
@@ -89,7 +105,9 @@ const AssignTeacher = () => {
             <Loader />
           </div>
         )}
-        {!isLoading && !isError && <AssignTeacherTable allRequests={content} />}
+        {!isLoading && !isError && !contentLoading && (
+          <AssignTeacherTable allRequests={content} />
+        )}
       </div>
     </section>
   );

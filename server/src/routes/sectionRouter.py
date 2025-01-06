@@ -11,8 +11,7 @@ router = APIRouter()
 
 @router.get("", response_model=list[SectionRead])
 async def get_sections(db: Session = Depends(get_db)):
-    sections = db.exec(
-        select(Section).options()).all()
+    sections = db.exec(select(Section)).all()
     return sections
 
 
@@ -97,8 +96,7 @@ async def assign_teacher_to_section(id: int, section: Section, db: Session = Dep
         )
 
     # Update the section
-    for key, value in section.model_dump(exclude_unset=True).items():
-        setattr(existing_section, key, value)
+    existing_section.teacher_id = section.teacher_id
 
     # Commit the changes
     db.commit()

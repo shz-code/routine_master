@@ -19,6 +19,8 @@ const TableRow = ({ index, data, teachers }) => {
       : null
   );
 
+  console.log(data);
+
   const [
     assignTeacher,
     { isError: isAssignTeacherError, error: assignTeacherError },
@@ -36,7 +38,7 @@ const TableRow = ({ index, data, teachers }) => {
       const res = await assignTeacher({
         id: data.id,
         body: {
-          teacher_id: data.semester.id,
+          teacher_id: selectedTeacher.value,
         },
       });
       if (res.data) {
@@ -72,7 +74,7 @@ const TableRow = ({ index, data, teachers }) => {
 
   return (
     <>
-      <tr>
+      <tr className="z-10">
         <td className="py-3 w-10">{index + 1}</td>
         <td>{data.semester.name}</td>
         <td>{data.course.courseName}</td>
@@ -122,7 +124,7 @@ const AssignTeacherTable = ({ allRequests }) => {
   }, [isLoading, isError]);
 
   return (
-    <div className="overflow-x-auto mt-8">
+    <div className="overflow-x-scroll md:overflow-x-visible mt-8">
       <table className="w-full text-center">
         <thead>
           <tr>
@@ -148,7 +150,7 @@ const AssignTeacherTable = ({ allRequests }) => {
           ) : (
             allRequests.map((a, index) => (
               <TableRow
-                key={index}
+                key={index + a.id}
                 index={index}
                 data={a}
                 teachers={teachers}

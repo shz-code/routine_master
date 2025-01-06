@@ -21,7 +21,7 @@ const AppSelect = ({
         defaultValue={value}
         isDisabled={disabled}
         isLoading={loading}
-      ></Select>
+      />
     </div>
   );
 };
