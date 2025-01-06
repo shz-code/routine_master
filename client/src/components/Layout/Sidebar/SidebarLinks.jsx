@@ -179,6 +179,11 @@ const SidebarLinks = ({ setSidebarOpen }) => {
           url: "/routine/teacherRoutine",
           icon: "done_all",
         },
+        {
+          name: "Get Course Routine",
+          url: "/routine/courseRoutine",
+          icon: "done_all",
+        },
       ],
     },
   ];

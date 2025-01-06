@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from src.models.roomAllocation import RoomAllocation
@@ -15,6 +16,18 @@ router = APIRouter()
 async def get_teacher_routine(req: TeacherSections, db: Session = Depends(get_db)):
     routines = db.exec(select(Routine).join(Section, Routine.section_id == Section.id).where(
         Section.semester_id == req.semester_id, Section.teacher_id == req.teacher_id)).all()
+    return routines
+
+
+class CourseSection(BaseModel):
+    course_id: int
+    semester_id: int
+
+
+@router.post("/course", response_model=list[RoutineRead])
+async def get_course_routine(req: CourseSection, db: Session = Depends(get_db)):
+    routines = db.exec(select(Routine).join(Section, Routine.section_id == Section.id).where(
+        Section.semester_id == req.semester_id, Section.course_id == req.course_id)).all()
     return routines
 
 

@@ -19,8 +19,6 @@ const TableRow = ({ index, data, teachers }) => {
       : null
   );
 
-  console.log(data);
-
   const [
     assignTeacher,
     { isError: isAssignTeacherError, error: assignTeacherError },

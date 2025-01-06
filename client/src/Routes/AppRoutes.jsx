@@ -9,6 +9,7 @@ import AllRoomAllocations from "../components/RoomAllocation/AllRoomAllocations/
 import CreateRoomAllocation from "../components/RoomAllocation/CreateRoomAllocation/CreateRoomAllocation";
 import EditRoomAllocation from "../components/RoomAllocation/EditRoomAllocation/EditRoomAllocation";
 import CreateRoutine from "../components/Routine/CreateRoutine/CreateRoutine";
+import GetCourseRoutine from "../components/Routine/GetCourseRoutine/GetCourseRoutine";
 import GetRoutine from "../components/Routine/GetRoutine/GetRoutine";
 import AllSections from "../components/Section/AllSections/AllSections";
 import AssignTeacher from "../components/Section/AssignTeacher/AssignTeacher";
@@ -33,6 +34,7 @@ const AppRoutes = () => {
         <Route path="/routine">
           <Route path="createRoutine" element={<CreateRoutine />} />
           <Route path="teacherRoutine" element={<GetRoutine />} />
+          <Route path="courseRoutine" element={<GetCourseRoutine />} />
         </Route>
 
         <Route path="/teacher">

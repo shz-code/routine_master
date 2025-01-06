@@ -9,6 +9,13 @@ const routineApi = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    getCoursesRoutine: builder.mutation({
+      query: (data) => ({
+        url: `/routine/course`,
+        method: "POST",
+        body: data,
+      }),
+    }),
     createRoutine: builder.mutation({
       query: (body) => ({
         url: `/routine`,
@@ -30,4 +37,5 @@ export const {
   useCreateRoutineMutation,
   useGetTeacherRoutineMutation,
   useDeleteRoutineMutation,
+  useGetCoursesRoutineMutation,
 } = routineApi;
