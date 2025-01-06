@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
   useCreateRoutineMutation,
+  useDeleteRoutineMutation,
   useGetTeacherRoutineMutation,
 } from "../../../features/routine/routineApi";
 import { useGetTeacherAssignedSectionsMutation } from "../../../features/section/sectionApi";
@@ -68,6 +69,7 @@ const CreateRoutine = () => {
   } = useGetTImeSlotsQuery();
 
   const [getTeacherAssignedSections] = useGetTeacherAssignedSectionsMutation();
+  const [deleteRoutine] = useDeleteRoutineMutation();
 
   const [createRoutine, { isError: submitIsError, error: submitError }] =
     useCreateRoutineMutation();
@@ -227,14 +229,20 @@ const CreateRoutine = () => {
     }
   };
 
-  const removeSchedule = (day, time) => {
+  const removeSchedule = async (section_id, day, time) => {
     let newRoutine = _.cloneDeep(routine);
 
-    newRoutine[day].courses = newRoutine[day].courses.filter(
-      (c) => c.timeSlot_id != time
-    );
+    const res = await deleteRoutine({
+      section_id: section_id,
+      timeSlot_id: time,
+    });
 
-    setRoutine(newRoutine);
+    if (res.data) {
+      newRoutine[day].courses = newRoutine[day].courses.filter(
+        (c) => c.timeSlot_id != time
+      );
+      setRoutine(newRoutine);
+    }
   };
 
   // Deprecated
@@ -387,7 +395,11 @@ const CreateRoutine = () => {
                                   <span
                                     className="text-red-700 p-1 bg-slate-200/60 hover:bg-slate-200 rounded cursor-pointer"
                                     onClick={() =>
-                                      removeSchedule(d.value, t.value)
+                                      removeSchedule(
+                                        c.section_id,
+                                        d.value,
+                                        t.value
+                                      )
                                     }
                                   >
                                     <Delete size={20} />

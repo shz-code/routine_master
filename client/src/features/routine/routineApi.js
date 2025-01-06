@@ -16,8 +16,18 @@ const routineApi = apiSlice.injectEndpoints({
         body: body,
       }),
     }),
+    deleteRoutine: builder.mutation({
+      query: (body) => ({
+        url: `/routine`,
+        method: "DELETE",
+        body: body,
+      }),
+    }),
   }),
 });
 
-export const { useCreateRoutineMutation, useGetTeacherRoutineMutation } =
-  routineApi;
+export const {
+  useCreateRoutineMutation,
+  useGetTeacherRoutineMutation,
+  useDeleteRoutineMutation,
+} = routineApi;

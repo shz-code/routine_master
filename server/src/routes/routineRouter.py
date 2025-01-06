@@ -24,10 +24,12 @@ async def create_routine(routine: Routine, db: Session = Depends(get_db)):
     return routine
 
 
-@router.delete("", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("", status_code=status.HTTP_200_OK)
 async def delete_routine(routine: Routine, db: Session = Depends(get_db)):
-    routine = db.exec(select(Routine).where(Routine.id == id)).first()
+    routine = db.exec(select(Routine).where(Routine.section_id ==
+                      routine.section_id, Routine.timeSlot_id == routine.timeSlot_id)).first()
 
     db.delete(routine)
     db.commit()
-    return None
+    status = "ok"
+    return status
