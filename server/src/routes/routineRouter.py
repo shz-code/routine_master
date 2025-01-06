@@ -52,6 +52,16 @@ async def create_routine(routine: Routine, db: Session = Depends(get_db)):
             detail="Room not available for selected timeslot."
         )
 
+    # Check if any other section of this course is at same timeslot
+    existing_routine = db.exec(select(Routine).join(
+        Section, Routine.section_id == Section.id).where(Section.semester_id == section.semester_id, Section.timeSlot_id == section.timeSlot_id, Section.course_id == section.course_id, Routine.day_index == routine.day_index)).first()
+
+    if existing_routine:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This course has another class at the specified time."
+        )
+
     roomAllocation.bookedRooms += 1
 
     db.add(routine)

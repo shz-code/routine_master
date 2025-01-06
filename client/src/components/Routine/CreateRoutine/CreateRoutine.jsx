@@ -106,9 +106,8 @@ const CreateRoutine = () => {
           semester_id: selectedSemester.value,
           teacher_id: selectedTeacher.value,
         });
+        let newRoutine = _.cloneDeep(initialRoutine);
         if (prevRoutine.data?.length > 0) {
-          let newRoutine = _.cloneDeep(initialRoutine);
-
           prevRoutine.data.map((item) => {
             newRoutine[item.day_index].courses.push({
               timeSlot_id: item.timeSlot.id,
@@ -118,8 +117,8 @@ const CreateRoutine = () => {
               section_id: item.section.id,
             });
           });
-          setRoutine(newRoutine);
         }
+        setRoutine(newRoutine);
         setShowSections(true);
       }
     })();
