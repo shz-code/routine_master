@@ -33,18 +33,37 @@ async def create_routine(routine: Routine, db: Session = Depends(get_db)):
             detail="Room Allocation is not completed for selected timeslot."
         )
 
+    if roomAllocation.bookedRooms == roomAllocation.rooms:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Room not available for selected timeslot."
+        )
+
+    roomAllocation.bookedRooms += 1
+
     db.add(routine)
     db.commit()
     db.refresh(routine)
+    db.refresh(roomAllocation)
     return routine
 
 
 @router.delete("", status_code=status.HTTP_200_OK)
 async def delete_routine(routine: Routine, db: Session = Depends(get_db)):
+    section = db.exec(select(Section).where(
+        Section.id == routine.section_id)).first()
+
+    roomAllocation = db.exec(select(RoomAllocation).where(
+        RoomAllocation.timeSlot_id == routine.timeSlot_id, section.semester_id == RoomAllocation.semester_id == section.semester_id)).first()
+
+    if roomAllocation.bookedRooms != 0:
+        roomAllocation.bookedRooms -= 1
+
     routine = db.exec(select(Routine).where(Routine.section_id ==
                       routine.section_id, Routine.timeSlot_id == routine.timeSlot_id)).first()
 
     db.delete(routine)
     db.commit()
+    db.refresh(roomAllocation)
     status = "ok"
     return status

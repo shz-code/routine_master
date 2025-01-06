@@ -175,13 +175,8 @@ const SidebarLinks = ({ setSidebarOpen }) => {
           icon: "done_all",
         },
         {
-          name: "Get Routine",
-          url: "/routine/getRoutine",
-          icon: "done_all",
-        },
-        {
-          name: "Teacher Feedbacks",
-          url: "/routine/teacherFeedbacks",
+          name: "Get Teacher Routine",
+          url: "/routine/teacherRoutine",
           icon: "done_all",
         },
       ],

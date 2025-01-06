@@ -32,7 +32,7 @@ const AppRoutes = () => {
 
         <Route path="/routine">
           <Route path="createRoutine" element={<CreateRoutine />} />
-          <Route path="getRoutine" element={<GetRoutine />} />
+          <Route path="teacherRoutine" element={<GetRoutine />} />
         </Route>
 
         <Route path="/teacher">
