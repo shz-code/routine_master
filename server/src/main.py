@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from src.routes.routineRouter import router as routineRouter
 from src.routes.sectionRouter import router as sectionRouter
 from src.routes.semesterRouter import router as semesterRouter
 from src.routes.courseRouter import router as courseRouter
@@ -33,6 +34,7 @@ app.include_router(semesterRouter, prefix='/semester', tags=['Semesters'])
 app.include_router(sectionRouter, prefix='/section', tags=['Sections'])
 app.include_router(roomAllocationRouter,
                    prefix='/roomAllocation', tags=['Room Allocation'])
+app.include_router(routineRouter, prefix='/routine', tags=['Routine'])
 
 
 # Root Page

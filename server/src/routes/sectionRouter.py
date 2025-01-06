@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 from sqlalchemy import null
 from sqlmodel import Session, select
 from sqlalchemy.orm import joinedload
@@ -20,6 +21,18 @@ async def get_section(id: int, db: Session = Depends(get_db)):
     section = db.exec(select(Section).where(
         Section.id == id)).first()
     return section
+
+
+class TeacherSections(BaseModel):
+    semester_id: int
+    teacher_id:  int
+
+
+@router.post("/teacher", response_model=list[SectionRead])
+async def get_teacher_sections(req: TeacherSections, db: Session = Depends(get_db)):
+    sections = db.exec(select(Section).where((Section.teacher_id == req.teacher_id) & (
+        Section.semester_id == req.semester_id))).all()
+    return sections
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)

@@ -170,7 +170,7 @@ const SidebarLinks = ({ setSidebarOpen }) => {
       nested: true,
       pages: [
         {
-          name: "Create Routine",
+          name: "Generate Routine",
           url: "/routine/createRoutine",
           icon: "done_all",
         },

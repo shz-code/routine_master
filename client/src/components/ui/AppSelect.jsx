@@ -7,6 +7,7 @@ const AppSelect = ({
   disabled,
   value,
   required = false,
+  loading = false,
 }) => {
   return (
     <div className="inputGroup space-y-2">
@@ -19,6 +20,7 @@ const AppSelect = ({
         options={selectItems}
         defaultValue={value}
         isDisabled={disabled}
+        isLoading={loading}
       ></Select>
     </div>
   );

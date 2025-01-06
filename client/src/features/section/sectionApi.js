@@ -12,6 +12,13 @@ const sectionApi = apiSlice.injectEndpoints({
         url: `/section/${id}`,
       }),
     }),
+    getTeacherAssignedSections: builder.mutation({
+      query: (body) => ({
+        url: `/section/teacher`,
+        method: "POST",
+        body: body,
+      }),
+    }),
     createSections: builder.mutation({
       query: (body) => ({
         url: `/section`,
@@ -123,4 +130,5 @@ export const {
   useDeleteSectionMutation,
   useAssignTeacherMutation,
   useRemoveTeacherMutation,
+  useGetTeacherAssignedSectionsMutation,
 } = sectionApi;

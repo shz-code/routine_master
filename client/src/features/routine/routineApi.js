@@ -2,30 +2,16 @@ import apiSlice from "../api/apiSlice";
 
 const routineApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getRoutine: builder.query({
+    getTeacherRoutine: builder.mutation({
       query: (data) => ({
-        url: `/GetRoutine`,
-        method: "POST",
-        body: data,
-      }),
-    }),
-    getTeacherRoutine: builder.query({
-      query: (data) => ({
-        url: `/GetTeacherRoutine`,
+        url: `/routine/teacher`,
         method: "POST",
         body: data,
       }),
     }),
     createRoutine: builder.mutation({
       query: (body) => ({
-        url: `/Routine`,
-        method: "POST",
-        body: body,
-      }),
-    }),
-    createRoutineFeedback: builder.mutation({
-      query: (body) => ({
-        url: `/Routinefeedback`,
+        url: `/routine`,
         method: "POST",
         body: body,
       }),
@@ -33,9 +19,5 @@ const routineApi = apiSlice.injectEndpoints({
   }),
 });
 
-export const {
-  useCreateRoutineMutation,
-  useGetRoutineQuery,
-  useGetTeacherRoutineQuery,
-  useCreateRoutineFeedbackMutation,
-} = routineApi;
+export const { useCreateRoutineMutation, useGetTeacherRoutineMutation } =
+  routineApi;

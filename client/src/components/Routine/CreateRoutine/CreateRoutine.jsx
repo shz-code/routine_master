@@ -2,105 +2,166 @@ import _ from "lodash";
 import { Delete } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useGetCoursesQuery } from "../../../features/course/courseApi";
-import { useCreateRoutineMutation } from "../../../features/routine/routineApi";
+import {
+  useCreateRoutineMutation,
+  useGetTeacherRoutineMutation,
+} from "../../../features/routine/routineApi";
+import { useGetTeacherAssignedSectionsMutation } from "../../../features/section/sectionApi";
 import { useGetSemestersQuery } from "../../../features/semester/semesterApi";
 import { useGetTeachersQuery } from "../../../features/teacher/teacherApi";
 import { useGetTImeSlotsQuery } from "../../../features/timeSlot/timeSlotApi";
-import Select from "../../ui/AppSelect";
+import AppSelect from "../../ui/AppSelect";
 import Button from "../../ui/Button";
-import Input from "../../ui/Input";
 
 const days = [
-  { id: 1, name: "Saturday" },
-  { id: 2, name: "Sunday" },
-  { id: 3, name: "Monday" },
-  { id: 4, name: "Tuesday" },
-  { id: 5, name: "Wednesday" },
-  { id: 6, name: "Thursday" },
-  { id: 7, name: "Friday" },
+  { value: 1, label: "Saturday" },
+  { value: 2, label: "Sunday" },
+  { value: 3, label: "Monday" },
+  { value: 4, label: "Tuesday" },
+  { value: 5, label: "Wednesday" },
+  { value: 6, label: "Thursday" },
+  { value: 7, label: "Friday" },
+];
+
+const initialRoutine = [
+  {},
+  { day: "Saturday", courses: [] },
+  { day: "Sunday", courses: [] },
+  { day: "Monday", courses: [] },
+  { day: "Tuesday", courses: [] },
+  { day: "Wednesday", courses: [] },
+  { day: "Thursday", courses: [] },
+  { day: "Friday", courses: [] },
 ];
 
 const CreateRoutine = () => {
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedDay, setSelectedDay] = useState("");
-  const [section, setSection] = useState("");
 
-  const [selectedTeacher, setSelectedTeacher] = useState("");
-  const [selectedSemester, setSelectedSemester] = useState("");
+  const [teachers, setTeachers] = useState([]);
+  const [semesters, setSemesters] = useState([]);
+  const [sections, setSections] = useState([]);
 
-  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const [selectedSemester, setSelectedSemester] = useState(null);
+  const [selectedSection, setSelectedSection] = useState(null);
+
   const [times, setTimes] = useState([]);
-  const [courses, setCourses] = useState([]);
-  const [formSubmitAble, setFormSubmitAble] = useState(false);
 
   const {
-    data: loadedTimes,
-    isLoading: timeLoading,
-    isError: isTimeError,
-    error,
-  } = useGetTImeSlotsQuery();
-  const {
-    data: teachers,
+    data: teachersData,
     isError: isTeacherError,
     isLoading: teachersLoading,
   } = useGetTeachersQuery(undefined, { refetchOnMountOrArgChange: true });
 
   const {
-    data: semesters,
+    data: semestersData,
     isLoading: semestersLoading,
     isError: isSemesterError,
   } = useGetSemestersQuery(undefined, { refetchOnMountOrArgChange: true });
 
-  const [
-    createRoutine,
-    { isLoading, isError: submitIsError, error: submitError },
-  ] = useCreateRoutineMutation();
-
   const {
-    data: loadedCourses,
-    isLoading: coursesLoading,
-    isError: courseError,
-  } = useGetCoursesQuery(undefined, { refetchOnMountOrArgChange: true });
+    data: timeSlotsData,
+    isLoading: timeLoading,
+    isError: isTimeError,
+    error,
+  } = useGetTImeSlotsQuery();
 
-  const [routine, setRoutine] = useState([
-    {},
-    { day: "Saturday", courses: [] },
-    { day: "Sunday", courses: [] },
-    { day: "Monday", courses: [] },
-    { day: "Tuesday", courses: [] },
-    { day: "Wednesday", courses: [] },
-    { day: "Thursday", courses: [] },
-    { day: "Friday", courses: [] },
-  ]);
+  const [getTeacherAssignedSections] = useGetTeacherAssignedSectionsMutation();
+
+  const [createRoutine, { isError: submitIsError, error: submitError }] =
+    useCreateRoutineMutation();
+
+  const [getTeacherRoutine] = useGetTeacherRoutineMutation();
+
+  const [routine, setRoutine] = useState(initialRoutine);
 
   useEffect(() => {
-    if (!coursesLoading && !courseError && loadedCourses.length > 0) {
+    (async () => {
+      if (selectedSemester && selectedTeacher) {
+        // Get related sections
+        const res = await getTeacherAssignedSections({
+          semester_id: selectedSemester.value,
+          teacher_id: selectedTeacher.value,
+        });
+        if (res.data) {
+          const d = res.data.map((s) => {
+            return {
+              label: `${s.course.courseCode} - ${s.name}`,
+              value: s.id,
+              sectionData: { ...s },
+            };
+          });
+          setSections(d);
+        }
+        // Get Related Routine
+        const prevRoutine = await getTeacherRoutine({
+          semester_id: selectedSemester.value,
+          teacher_id: selectedTeacher.value,
+        });
+        if (prevRoutine.data?.length > 0) {
+          let newRoutine = _.cloneDeep(routine);
+
+          prevRoutine.data.map((item) => {
+            newRoutine[item.day_index].courses.push({
+              timeSlot_id: item.timeSlot.id,
+              courseCode: item.section.course.courseCode,
+              courseId: item.section.course.id,
+              section: `${item.section.course.courseCode} - ${item.section.name}`,
+              section_id: item.section.id,
+            });
+          });
+          setRoutine(newRoutine);
+        } else {
+          setRoutine(initialRoutine);
+        }
+      }
+    })();
+  }, [selectedSemester, selectedTeacher]);
+
+  useEffect(() => {
+    if (!teachersLoading && !isTeacherError) {
       const cL = [];
-      loadedCourses.map((l) => {
+      teachersData.map((l) => {
         cL.push({
-          value: l.courseCode,
-          label: l.courseCode,
+          value: l.id,
+          label: `${l.name} (${l.shortCode})`,
         });
       });
-      setCourses(cL);
+      setTeachers(cL);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coursesLoading, courseError]);
+  }, [teachersLoading, isTeacherError]);
 
   useEffect(() => {
-    if (!timeLoading && !isTimeError && loadedTimes.length > 0) {
+    if (!timeLoading && !isTimeError && timeSlotsData.length > 0) {
       const t = [];
-      loadedTimes.map((l) => {
+      timeSlotsData.map((l) => {
         t.push({
           value: l.id,
-          name: `${l.startTime} - ${l.endTime}`,
+          label: `${l.startTime} - ${l.endTime}`,
+          timeSlotData: { ...l },
         });
       });
       setTimes(t);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coursesLoading, courseError]);
+  }, [timeLoading, isTimeError]);
+
+  useEffect(() => {
+    if (!semestersLoading && !isSemesterError) {
+      const t = [];
+      semestersData.map((l) => {
+        t.push({
+          value: l.id,
+          label: `${l.name}`,
+          semesterData: { ...l },
+        });
+      });
+      setSemesters(t);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSemesterError, semestersLoading]);
 
   useEffect(() => {
     if (isTimeError) {
@@ -110,54 +171,30 @@ const CreateRoutine = () => {
   }, [isTimeError]);
 
   useEffect(() => {
-    if (submitIsError) toast.error(submitError.data);
+    // if (submitIsError) toast.error(submitError.data);
   }, [submitIsError, submitError]);
 
-  const handleSelectCourse = (e) => {
-    loadedCourses.map((l) => {
-      if (e.target.value === l.courseCode) {
-        setSelectedCourse(l);
-      }
-    });
-  };
-
-  const handleSemesterChange = (e) => {
-    semesters.map((l) => {
-      if (e.target.value === l.id) {
-        setSelectedSemester(l);
-      }
-    });
-  };
-
-  const handleTeacherChange = (e) => {
-    teachers.map((l) => {
-      if (e.target.value === l.id) {
-        setSelectedTeacher(l);
-      }
-    });
-  };
-
-  const addSchedule = () => {
+  const addSchedule = async () => {
     let newRoutine = _.cloneDeep(routine);
 
     let ck = true;
 
-    newRoutine[selectedDay].courses.map((c) => {
-      if (c.timeId == selectedTime) {
+    newRoutine[selectedDay.value].courses.map((c) => {
+      if (c.timeSlot_id == selectedTime.value) {
         ck = false;
         toast.error(`Time slot already selected for ${c.courseCode}`);
       }
     });
 
-    if (newRoutine[selectedDay].courses.length > 1 && ck) {
-      let c = _.cloneDeep(newRoutine[selectedDay].courses);
-      c.push({ timeId: selectedTime });
-      c = c.sort((a, b) => Number(a.timeId) - Number(b.timeId));
+    if (newRoutine[selectedDay.value].courses.length > 1 && ck) {
+      let c = _.cloneDeep(newRoutine[selectedDay.value].courses);
+      c.push({ timeSlot_id: selectedTime.value });
+      c = c.sort((a, b) => Number(a.timeSlot_id) - Number(b.timeSlot_id));
 
       for (let i = 0; i < c.length - 2; i++) {
         if (
-          Number(c[i].timeId) + 1 === Number(c[i + 1].timeId) &&
-          Number(c[i + 1].timeId) + 1 === Number(c[i + 2].timeId)
+          Number(c[i].timeSlot_id) + 1 === Number(c[i + 1].timeSlot_id) &&
+          Number(c[i + 1].timeSlot_id) + 1 === Number(c[i + 2].timeSlot_id)
         ) {
           let sure = confirm(
             "Choosing this slot makes 3 hours consecutive class for faculty. Are you sure?"
@@ -168,16 +205,25 @@ const CreateRoutine = () => {
     }
 
     if (ck) {
-      newRoutine[selectedDay].courses.push({
-        timeId: selectedTime,
-        courseCode: selectedCourse.courseCode,
-        courseId: selectedCourse.id,
-        section: section,
+      newRoutine[selectedDay.value].courses.push({
+        timeSlot_id: selectedTime.value,
+        courseCode: selectedSection.sectionData.course.courseCode,
+        courseId: selectedSection.sectionData.course.id,
+        section: selectedSection.label,
+        section_id: selectedSection.value,
       });
-      setSection("");
-      setSelectedTime("");
-      setRoutine(newRoutine);
-      setFormSubmitAble(true);
+      try {
+        const res = await createRoutine({
+          timeSlot_id: selectedTime.value,
+          section_id: selectedSection.value,
+          day_index: selectedDay.value,
+        });
+        if (res.data) {
+          setRoutine(newRoutine);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -185,12 +231,13 @@ const CreateRoutine = () => {
     let newRoutine = _.cloneDeep(routine);
 
     newRoutine[day].courses = newRoutine[day].courses.filter(
-      (c) => c.timeId != time
+      (c) => c.timeSlot_id != time
     );
 
     setRoutine(newRoutine);
   };
 
+  // Deprecated
   const handleSubmit = async () => {
     const res = await createRoutine({
       teacherId: selectedTeacher.id,
@@ -224,70 +271,60 @@ const CreateRoutine = () => {
                 <div className="w-full">
                   {!teachersLoading &&
                     !isTeacherError &&
-                    teachers.length > 0 && (
-                      <Select
+                    teachersData.length > 0 && (
+                      <AppSelect
                         label="Select Teacher"
                         selectItems={teachers}
-                        value={selectedTeacher.id}
-                        onChange={(e) => handleTeacherChange(e)}
+                        handleChange={(e) => setSelectedTeacher(e)}
                       />
                     )}
                 </div>
                 <div className="w-full">
-                  {!coursesLoading && !courseError && courses.length > 0 && (
-                    <Select
-                      label="Select Course"
-                      selectItems={courses}
-                      onChange={(e) => handleSelectCourse(e)}
-                    />
-                  )}
+                  {!semestersLoading &&
+                    !isSemesterError &&
+                    semestersData.length > 0 && (
+                      <AppSelect
+                        label="Select Semester"
+                        selectItems={semesters}
+                        handleChange={(e) => setSelectedSemester(e)}
+                      />
+                    )}
                 </div>
               </div>
               {/* Row 2 */}
               <div className="break-on-md w-full gap-2">
                 <div className="w-full">
-                  {!semestersLoading &&
-                    !isSemesterError &&
-                    semesters.length > 0 && (
-                      <Select
-                        label="Select Semester"
-                        selectItems={semesters}
-                        value={selectedSemester.id}
-                        onChange={(e) => handleSemesterChange(e)}
-                      />
-                    )}
-                </div>
-                <div className="w-full">
-                  <Input
-                    label="Section"
-                    value={section}
-                    onChange={(e) => setSection(e.target.value.toUpperCase())}
-                    // disabled
+                  <AppSelect
+                    label="Select Section"
+                    selectItems={sections}
+                    disabled={sections.length === 0}
+                    loading={sections.length === 0}
+                    handleChange={(e) => setSelectedSection(e)}
                   />
                 </div>
               </div>
             </div>
           </div>
-          {/* Select Day and Time */}
+          {/* AppSelect Day and Time */}
           <div className="mt-8 bg-slate-200 p-4 rounded shadow">
             {/* Row 1 */}
             <div className="space-y-4">
               <div className="break-on-md w-full gap-2">
                 <div className="w-full">
-                  <Select
+                  <AppSelect
                     label="Select Day"
                     selectItems={days}
                     value={selectedDay}
-                    onChange={(e) => setSelectedDay(e.target.value)}
+                    handleChange={(e) => setSelectedDay(e)}
                   />
                 </div>
                 <div className="w-full">
                   {!timeLoading && !isTimeError && times.length > 0 && (
-                    <Select
-                      label="Select Time"
+                    <AppSelect
+                      label="Select Time Slot"
                       selectItems={times}
                       value={selectedTime}
-                      onChange={(e) => setSelectedTime(e.target.value)}
+                      handleChange={(e) => setSelectedTime(e)}
                     />
                   )}
                 </div>
@@ -298,12 +335,13 @@ const CreateRoutine = () => {
                     disabled={
                       !selectedDay ||
                       !selectedTime ||
-                      !selectedCourse ||
-                      !section ||
+                      // !selectedCourse ||
+                      !selectedSection ||
                       !selectedTeacher ||
                       !selectedSemester
                     }
                     onClick={addSchedule}
+                    type="button"
                   >
                     Add To Routine
                   </Button>
@@ -324,32 +362,33 @@ const CreateRoutine = () => {
                   {!timeLoading &&
                     !isTimeError &&
                     times.length > 0 &&
-                    times.map((t) => <th key={t.id}>{t.name}</th>)}
+                    times.map((t) => <th key={t.value}>{t.label}</th>)}
                 </tr>
               </thead>
               <tbody>
                 {days.map((d) => (
-                  <tr key={d.id}>
-                    <td>{d.name}</td>
+                  <tr key={d.value}>
+                    <td>{d.label}</td>
                     {!timeLoading &&
                       !isTimeError &&
                       times.length > 0 &&
                       times.map((t) => (
-                        <td key={t.id}>
-                          {routine[d.id].courses.map(
+                        <td key={t.value}>
+                          {routine[d.value].courses.map(
                             (c, ind) =>
-                              Number(c.timeId) === t.id && (
+                              Number(c.timeSlot_id) === t.value && (
                                 <div
                                   key={ind}
                                   className="flex justify-center items-center gap-4"
                                 >
                                   <p className="flex flex-col">
-                                    {c.courseCode}
-                                    <span>Sec: {c.section}</span>
+                                    <span>{c.section}</span>
                                   </p>
                                   <span
                                     className="text-red-700 p-1 bg-slate-200/60 hover:bg-slate-200 rounded cursor-pointer"
-                                    onClick={() => removeSchedule(d.id, t.id)}
+                                    onClick={() =>
+                                      removeSchedule(d.value, t.value)
+                                    }
                                   >
                                     <Delete size={20} />
                                   </span>
@@ -362,16 +401,6 @@ const CreateRoutine = () => {
                 ))}
               </tbody>
             </table>
-          </div>
-
-          <div className="mt-8">
-            <Button
-              disabled={isLoading || !formSubmitAble}
-              loading={isLoading}
-              onClick={handleSubmit}
-            >
-              Save Routine
-            </Button>
           </div>
         </div>
       </div>
