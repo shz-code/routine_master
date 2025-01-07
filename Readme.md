@@ -59,7 +59,7 @@
 
 3. Start the frontend application:
    ```bash
-   npm start
+   npm run dev
    ```
 4. Open your web browser and navigate to `http://localhost:5173` to access the frontend.
 5. Follow the on-screen instructions to set up and manage faculty routines.
