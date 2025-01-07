@@ -46,9 +46,9 @@
 
 ## Frontend Setup
 
-1. Navigate to the frontend directory and install dependencies:
+1. Navigate to the client directory and install dependencies:
    ```bash
-   cd frontend
+   cd client
    npm install
    ```
 2. Create .env file that has the server api url (give the backend root url here):
