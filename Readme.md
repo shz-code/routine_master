@@ -46,9 +46,9 @@
 
 ## Frontend Setup
 
-1. Navigate to the frontend directory and install dependencies:
+1. Navigate to the client directory and install dependencies:
    ```bash
-   cd frontend
+   cd client
    npm install
    ```
 2. Create .env file that has the server api url (give the backend root url here):
@@ -59,7 +59,7 @@
 
 3. Start the frontend application:
    ```bash
-   npm start
+   npm run dev
    ```
 4. Open your web browser and navigate to `http://localhost:5173` to access the frontend.
 5. Follow the on-screen instructions to set up and manage faculty routines.
