@@ -52,9 +52,13 @@ async def create_routine(routine: Routine, db: Session = Depends(get_db)):
             detail="Room not available for selected timeslot."
         )
 
+    print(routine)
+
     # Check if any other section of this course is at same timeslot
     existing_routine = db.exec(select(Routine).join(
-        Section, Routine.section_id == Section.id).where(Section.semester_id == section.semester_id, Section.timeSlot_id == section.timeSlot_id, Section.course_id == section.course_id, Routine.day_index == routine.day_index)).first()
+        Section, Routine.section_id == Section.id).where(Section.semester_id == section.semester_id, Routine.timeSlot_id == routine.timeSlot_id, Section.course_id == section.course_id, Routine.day_index == routine.day_index)).first()
+
+    print(existing_routine)
 
     if existing_routine:
         raise HTTPException(
